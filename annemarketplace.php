@@ -2,7 +2,7 @@
 /*
 Plugin Name: Anne Marketplace
 Plugin URI: http://127.0.0.1/anne/
-Description: Plugin Opções Extras Woocommerce 
+Description: Plugin para Marketplace
 Version: 1.0
 Author: Diego Antoniança    
 Author URI: http://127.0.0.1/anne/
@@ -67,7 +67,7 @@ function annemarketplace_add_js_media() {
 
 
 function annemarketplace_menu(){
-    add_menu_page('Anne Store', 'Anne Store', 'manage_options', 'annemarketplace', 'Dashboard::layout', 'dashicons-star-empty', 10);
+    add_menu_page('Anne Marketplace', 'Anne Marketplace', 'manage_options', 'annemarketplace', 'Dashboard::layout', 'dashicons-palmtree', 10);
 }
 
 

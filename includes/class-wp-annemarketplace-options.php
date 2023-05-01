@@ -19,10 +19,14 @@ class Options{
         // add_filter('add_to_cart_redirect', [$this,'lw_add_to_cart_redirect']);
 
         add_action( 'before_delete_post', [$this,'delete_product_images'], 10, 1 );
+        add_action( 'template_redirect', [$this,'restrict_access_to_homepage'], 10, 1);
+
         wp_enqueue_script( 'jQuery_Mask_JS', ANNEMARKETPLACE_ADMIN_JS.'jquery.mask.js', array( 'jquery' ) );
         wp_enqueue_script( 'jQuery_Mask_Min_JS', ANNEMARKETPLACE_ADMIN_JS.'jquery.mask.min.js', array( 'jquery' ) );
         wp_enqueue_script( 'Anne_JS', ANNEMARKETPLACE_ADMIN_JS.'form_checkout_v3.js', array( 'jquery' ) );
         wp_enqueue_script( 'Menu_JS', ANNEMARKETPLACE_ADMIN_JS.'menu_v9.js', array( 'jquery' ) );
+
+
     }
 
     // public static function lw_add_to_cart_redirect() {
@@ -31,6 +35,13 @@ class Options{
     //     return $lw_redirect_checkout;
     // }
     
+
+    public static function restrict_access_to_homepage() {
+        if ( !current_user_can( 'administrator' ) && is_page() ) {
+          wp_die( 'Você não tem permissão para acessar esta página.' );
+        }
+      }
+
 
     public static function delete_product_images( $post_id ) {
         $product = wc_get_product( $post_id );
