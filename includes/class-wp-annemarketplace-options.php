@@ -26,7 +26,7 @@ class Options{
         wp_enqueue_script( 'Anne_JS', ANNEMARKETPLACE_ADMIN_JS.'form_checkout_v3.js', array( 'jquery' ) );
         wp_enqueue_script( 'Menu_JS', ANNEMARKETPLACE_ADMIN_JS.'menu_v9.js', array( 'jquery' ) );
 
-
+        add_action( 'wp_body', [$this, 'restrict_access_to_homepage'] );
     }
 
     // public static function lw_add_to_cart_redirect() {
@@ -34,11 +34,10 @@ class Options{
     //     $lw_redirect_checkout = $woocommerce->cart->get_checkout_url();
     //     return $lw_redirect_checkout;
     // }
-    
-
     public static function restrict_access_to_homepage() {
-        if ( !current_user_can( 'administrator' ) && is_page() ) {
-          wp_die( 'Você não tem permissão para acessar esta página.' );
+        if ( !current_user_can( 'administrator' ) && is_page('home') ) {
+        echo '<div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #fff; padding: 20px; border: 1px solid #ccc;">Você não tem permissão para acessar esta página....</div>';
+        exit;
         }
       }
 
