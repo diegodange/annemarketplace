@@ -26,12 +26,8 @@ class Options{
         wp_enqueue_script( 'Anne_JS', ANNEMARKETPLACE_ADMIN_JS.'form_checkout_v3.js', array( 'jquery' ) );
         wp_enqueue_script( 'Menu_JS', ANNEMARKETPLACE_ADMIN_JS.'menu_v9.js', array( 'jquery' ) );
 
-<<<<<<< HEAD
         add_shortcode( 'vendor_list', [$this,'list_vendors']);
 
-=======
-        add_action( 'wp_body', [$this, 'restrict_access_to_homepage'] );
->>>>>>> 178b65a167a4385ef642a5050255d1fc9607b305
     }
 
           // $custom_fields = get_posts([
