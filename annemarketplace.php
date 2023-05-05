@@ -44,25 +44,19 @@ function annemarketplace_plugin_init() {
 
 
 function annemarketplace_add_css_admin(){
-
-
-
+    wp_enqueue_style('Bootstrap_Min_CSS', plugin_dir_url(__FILE__). 'admin/css/bootstrap.min.css');
 }
 
 
 function annemarketplace_add_js_admin(){
-    
-
+    wp_enqueue_script( 'Bootstrap_Bundle_Min_JS', plugin_dir_url(__FILE__) .'admin/js/bootstrap.bundle.min.js', array( 'jquery' ) );
 }
 
 
 function annemarketplace_add_js_media() {
     if ( ! did_action( 'wp_enqueue_media' ) ) {
         wp_enqueue_media();
-    }
-  
-    // wp_enqueue_script( 'myuploadscript_noticia', annemarketplace_ADMIN_JS.'media-noticia.js', array( 'jquery' ) );
-    // wp_enqueue_script( 'myuploadscript', annemarketplace_ADMIN_JS.'media.js', array( 'jquery' ) );
+    }  
 }
 
 
