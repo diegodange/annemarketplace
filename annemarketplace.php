@@ -39,17 +39,23 @@ function annemarketplace_plugin_init() {
     include 'includes/class-wp-annemarketplace-variables.php';
     include 'includes/class-wp-annemarketplace-dashboard.php';
     include 'includes/class-wp-annemarketplace-options.php';
+    include 'includes/class-wp-annemarketplace-product.php';
 
 }
 
 
 function annemarketplace_add_css_admin(){
+    wp_enqueue_style('Style_CSS', plugin_dir_url(__FILE__). 'admin/css/style_marketplace.css');
     wp_enqueue_style('Bootstrap_Min_CSS', plugin_dir_url(__FILE__). 'admin/css/bootstrap.min.css');
+    wp_enqueue_style( 'Select2_Min_CSS', plugin_dir_url(__FILE__). 'admin/css/select2.min.css');
 }
 
 
 function annemarketplace_add_js_admin(){
     wp_enqueue_script( 'Bootstrap_Bundle_Min_JS', plugin_dir_url(__FILE__) .'admin/js/bootstrap.bundle.min.js', array( 'jquery' ) );
+    wp_enqueue_script( 'Select2_Min_JS', plugin_dir_url(__FILE__) .'admin/js/select2.min.js', array(), '1.0.1', true );
+    wp_enqueue_script( 'Scripts_JS', plugin_dir_url(__FILE__) .'admin/js/scripts.js', array( 'jquery' ) );
+
 }
 
 
