@@ -14,6 +14,10 @@ class Products{
     public function __construct() {
         add_action( 'woocommerce_product_options_general_product_data', [$this,'add_custom_vendor_field']);
         add_action( 'woocommerce_process_product_meta',  [$this,'save_custom_vendor_field']);
+
+        add_filter( 'manage_product_posts_columns', [$this,'my_custom_products_table_column'], 20, 1 );
+        add_action( 'manage_product_posts_custom_column', [$this,'my_custom_products_table_column_content'], 20, 2 );
+
     }
         // add_role( 'vendor', 'Vendedor', array(
         //     'read'         => true,
@@ -60,6 +64,32 @@ class Products{
             update_post_meta( $post_id, '_vendor_id', $_POST['_vendor_id'] );
         }
     }
+    
+    // Adiciona uma nova coluna "Vendedor" à tabela de listagem de produtos
+    public static function my_custom_products_table_column( $columns ) {
+        $new_columns = array();
+        foreach( $columns as $column_key => $column_value ) {
+            $new_columns[ $column_key ] = $column_value;
+            if ( 'product_tag' === $column_key ) { // Adiciona após a coluna "Tag"
+                $new_columns['product_vendor'] = __( 'Vendedor', 'woocommerce' );
+            }
+        }
+        return $new_columns;
+    }
+
+    // Exibe o nome do vendedor na coluna "Vendedor" da tabela de listagem de produtos
+    public static function my_custom_products_table_column_content( $column, $post_id ) {
+        if ( 'product_vendor' === $column ) {
+            $vendor_id = get_post_meta( $post_id, '_vendor_id', true );
+            if ( ! empty( $vendor_id ) ) {
+                $vendor = get_user_by( 'id', $vendor_id );
+                echo esc_html( $vendor->display_name );
+            } else {
+                echo '-';
+            }
+        }
+    }
+
 
 }
 
