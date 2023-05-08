@@ -82,8 +82,9 @@ class Products{
         if ( 'product_vendor' === $column ) {
             $vendor_id = get_post_meta( $post_id, '_vendor_id', true );
             if ( ! empty( $vendor_id ) ) {
-                $vendor = get_user_by( 'id', $vendor_id );
-                echo esc_html( $vendor->display_name );
+                $vendor = get_user_by( 'id', intval($vendor_id));
+                $all_meta_for_user = get_user_meta(  intval($vendor_id) ); 
+                echo esc_html($all_meta_for_user->first_name);
             } else {
                 echo '-';
             }
