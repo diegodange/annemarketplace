@@ -24,7 +24,7 @@ class Products{
             'delete_posts' => true,
         ) );
 
-        add_action( 'init', [$this,'add_vendor_capabilities'] );
+        add_action( 'init', [$this,'add_vendor_product_caps'] );
         add_action( 'pre_get_posts', [$this,'filter_products_by_vendor'] );
 
     }
@@ -42,18 +42,10 @@ class Products{
     }
 
 
-    public static function add_vendor_capabilities() {
+    public static function add_vendor_product_caps() {
         $role = get_role( 'vendor' );
-        // $role->add_cap( 'edit_products' );
-        // $role->add_cap( 'edit_others_products' );
-        // $role->add_cap( 'publish_products' );
-        // $role->add_cap( 'read_products' );
-        // $role->add_cap( 'read_private_products' );
-        // $role->add_cap( 'delete_products' );
-        // $role->add_cap( 'delete_private_products' );
-        // $role->add_cap( 'delete_published_products' );
-        // $role->add_cap( 'delete_others_products' );
         $role->add_cap( 'edit_products' );
+        $role->add_cap( 'edit_published_products' );
         $role->add_cap( 'edit_others_products' );
         $role->add_cap( 'publish_products' );
         $role->add_cap( 'read_products' );
@@ -62,8 +54,8 @@ class Products{
         $role->add_cap( 'delete_private_products' );
         $role->add_cap( 'delete_published_products' );
         $role->add_cap( 'delete_others_products' );
-        $role->add_cap( 'edit_own_products' );
     }
+
 
     public static function add_custom_vendor_field($post_id) {
 
