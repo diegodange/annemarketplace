@@ -85,15 +85,20 @@ class Products{
             // Obtém uma lista de objetos WP_User
             $user_query = new WP_User_Query( array( 'role' => 'vendor' ) );
             $users = $user_query->get_results();
+            $names = array();
             for ($i=0; $i < count($vendor_id) ; $i++) { 
                 // Itera sobre a lista e imprime o valor de user_login de cada objeto
                 foreach ( $users as $user ) {
                     if ($vendor_id[$i] == $user->data->ID) {
                         $first_name = get_user_meta( $user->data->ID, 'first_name', true );
-                        echo $first_name;
+                        $last_name = get_user_meta( $user->data->ID, 'last_name', true );
+                        $complete_name = $first_name.' '.$last_name;
+                        $profile_url = get_edit_user_link( $user->data->ID );
+                        $names[] = '<a href="' . $profile_url . '">' . $complete_name . '</a>';                        
                     }
                 }
             }
+            echo implode(', ', $names);
         }
     }   
 
