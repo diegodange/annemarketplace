@@ -31,19 +31,28 @@ class Products{
 
 
     public static function filter_products_by_vendor( $query ) {
-    // Verifica se o usuário atual é um vendedor
-    if ( current_user_can( 'vendor' ) ) {
-        // Obtém o ID do usuário atual
-        $user_id = get_current_user_id();
-        
-        // Adiciona uma cláusula para filtrar por autor (ID do usuário)
-        $query->set( 'author', $user_id );
-    }
+        // Verifica se o usuário atual é um vendedor
+        if ( current_user_can( 'vendor' ) ) {
+            // Obtém o ID do usuário atual
+            $user_id = get_current_user_id();
+            
+            // Adiciona uma cláusula para filtrar por autor (ID do usuário)
+            $query->set( 'author', $user_id );
+        }
     }
 
 
     public static function add_vendor_capabilities() {
         $role = get_role( 'vendor' );
+        // $role->add_cap( 'edit_products' );
+        // $role->add_cap( 'edit_others_products' );
+        // $role->add_cap( 'publish_products' );
+        // $role->add_cap( 'read_products' );
+        // $role->add_cap( 'read_private_products' );
+        // $role->add_cap( 'delete_products' );
+        // $role->add_cap( 'delete_private_products' );
+        // $role->add_cap( 'delete_published_products' );
+        // $role->add_cap( 'delete_others_products' );
         $role->add_cap( 'edit_products' );
         $role->add_cap( 'edit_others_products' );
         $role->add_cap( 'publish_products' );
@@ -53,6 +62,7 @@ class Products{
         $role->add_cap( 'delete_private_products' );
         $role->add_cap( 'delete_published_products' );
         $role->add_cap( 'delete_others_products' );
+        $role->add_cap( 'edit_own_products' );
     }
 
     public static function add_custom_vendor_field($post_id) {
