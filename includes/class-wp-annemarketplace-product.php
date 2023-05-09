@@ -80,17 +80,22 @@ class Products{
     // Exibe o nome do vendedor na coluna "Vendedor" da tabela de listagem de produtos
     public static function my_custom_products_table_column_content( $column, $post_id ) {
         if ( 'product_vendor' === $column ) {
-            $vendor_id = get_post_meta( $post_id, '_vendor_id', true );
-            if ( ! empty( $vendor_id ) ) {
-                $vendor = get_user_by( 'id', intval($vendor_id));
-                $all_meta_for_user = get_user_meta(  intval($vendor_id) ); 
-                echo esc_html($all_meta_for_user->first_name);
-            } else {
-                echo '-';
+            // Obtém o ID do usuário do tipo "vendor" para o produto
+            $vendor_id = get_post_meta($post_id, '_vendor_id', true);
+            // Obtém uma lista de objetos WP_User
+            $user_query = new WP_User_Query( array( 'role' => 'vendor' ) );
+            $users = $user_query->get_results();
+            for ($i=0; $i < count($vendor_id) ; $i++) { 
+                // Itera sobre a lista e imprime o valor de user_login de cada objeto
+                foreach ( $users as $user ) {
+                    if ($vendor_id[$i] == $user->data->ID) {
+                        $first_name = get_user_meta( $user->data->ID, 'first_name', true );
+                        echo $first_name;
+                    }
+                }
             }
         }
-    }
-
+    }   
 
 }
 
