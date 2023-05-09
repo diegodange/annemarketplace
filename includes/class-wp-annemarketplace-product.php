@@ -25,6 +25,20 @@ class Products{
         ) );
 
         add_action( 'init', [$this,'add_vendor_capabilities'] );
+        add_action( 'pre_get_posts', [$this,'filter_products_by_vendor'] );
+
+    }
+
+
+    public static function filter_products_by_vendor( $query ) {
+    // Verifica se o usuário atual é um vendedor
+    if ( current_user_can( 'vendor' ) ) {
+        // Obtém o ID do usuário atual
+        $user_id = get_current_user_id();
+        
+        // Adiciona uma cláusula para filtrar por autor (ID do usuário)
+        $query->set( 'author', $user_id );
+    }
     }
 
 
@@ -117,6 +131,7 @@ class Products{
             echo implode(', ', $names);
         }
     }  
+
 
 }
 
