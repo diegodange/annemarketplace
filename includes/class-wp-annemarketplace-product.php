@@ -25,7 +25,7 @@ class Products{
         ) );
 
         add_action( 'init', [$this,'add_vendor_product_caps'] );
-        add_action( 'pre_get_posts', [$this,'filter_products_by_vendor'] );
+        
         add_filter( 'views_edit-product', [$this,'custom_product_subsubsub']);
 
         add_action( 'admin_menu', [$this, 'remove_menu_items_for_vendor'], 999 );
@@ -45,23 +45,60 @@ class Products{
             );
             return $args;
         });
+    
+        add_action('woocommerce_process_product_meta', [$this, 'salvar_vendor_id_produto']);
+        add_action('woocommerce_admin_order_data_after_billing_address', [$this, 'exibir_vendor_id_pedido'], 10, 1);
+        add_action('woocommerce_checkout_create_order', [$this, 'vincular_vendor_a_pedido'], 10, 1);
+        add_action('pre_get_posts', [$this,'filtrar_produtos_e_pedidos_por_vendor']);
+    }
 
-        add_action('woocommerce_process_product_meta', [$this,'salvar_vendor_id_produto'] );
+    function filtrar_produtos_e_pedidos_por_vendor($query) {
+        if (current_user_can('vendor')) {
+            $user_id = get_current_user_id();
+    
+            // Filtrar produtos
+            if (is_post_type_archive('product')) {
+                $query->set('author', $user_id);
+            }
+    
+            // Filtrar pedidos
+            if (is_post_type_archive('shop_order') && is_admin()) {
+                $query->set('meta_key', '_vendor_id');
+                $query->set('meta_value', $user_id);
+            }
+        }
+    }
+    
+    function exibir_vendor_id_pedido($order) {
+        $vendor_id = $order->get_meta('_vendor_id');
+        
+        if (!empty($vendor_id)) {
+            echo 'Vendor ID: ' . $vendor_id;
+        }
+    }
 
+    function vincular_vendor_a_pedido($order) {
+        $items = $order->get_items();
+
+        foreach ($items as $item) {
+            $product_id = $item->get_product_id();
+            $vendor_id = get_post_meta($product_id, '_vendor_id', true);
+
+            if ($vendor_id) {
+                $order->update_meta_data('_vendor_id', $vendor_id);
+                break;
+            }
+        }
+        $order->save();
     }
 
     // Adicione este código ao seu arquivo functions.php ou a um plugin personalizado
     public static function salvar_vendor_id_produto($product_id) {
-        // Verifique se o usuário atual é um 'vendor'
         if (current_user_can('vendor')) {
-            // Obtenha o ID do usuário atual
             $user_id = get_current_user_id();
-
-            // Atualize o campo personalizado '_vendor_id' com o ID do usuário
             update_post_meta($product_id, '_vendor_id', $user_id);
         }
     }
-
     
     public static function remove_menu_items_for_vendor() {
 
@@ -148,19 +185,6 @@ class Products{
         return $views;
     }
 
-    
-    public static function filter_products_by_vendor( $query ) {
-        // Verifica se o usuário atual é um vendedor
-        if ( current_user_can( 'vendor' ) ) {
-            // Obtém o ID do usuário atual
-            $user_id = get_current_user_id();
-            
-            // Adiciona uma cláusula para filtrar por autor (ID do usuário)
-            $query->set( 'author', $user_id );
-        }
-    }
-
-
     public static function add_vendor_product_caps() {
         $role = get_role( 'vendor' );
         $role->add_cap( 'edit_products' );
@@ -191,6 +215,22 @@ class Products{
         $role->add_cap( 'delete_private_shop_orders' );
         $role->add_cap( 'delete_published_shop_orders' );
         $role->add_cap( 'delete_others_shop_orders' );
+
+        $role->add_cap( 'upload_files' );
+        $role->add_cap( 'read' );
+        $role->add_cap( 'edit_published_products ');
+
+        $role->add_cap( 'read_private_shop_orders');
+        $role->add_cap( 'edit_shop_orders');
+        $role->add_cap( 'edit_others_shop_orders');
+        $role->add_cap( 'edit_published_shop_orders');
+        $role->add_cap( 'publish_shop_orders');
+        $role->add_cap( 'read_shop_order');
+        $role->add_cap( 'delete_shop_orders');
+        $role->add_cap( 'delete_private_shop_orders');
+        $role->add_cap( 'delete_published_shop_orders');
+        $role->add_cap( 'delete_others_shop_orders');
+        
     }
 
 
