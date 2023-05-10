@@ -26,10 +26,48 @@ class Products{
 
         add_action( 'init', [$this,'add_vendor_product_caps'] );
         add_action( 'pre_get_posts', [$this,'filter_products_by_vendor'] );
+        add_filter( 'views_edit-product', [$this,'custom_product_subsubsub']);
 
     }
 
 
+    public static function custom_product_subsubsub( $views ) {
+        // Verifica se o usuário atual é um vendedor
+        if ( current_user_can( 'vendor' ) ) {
+            $user_id = get_current_user_id();
+            
+            // Obtem o total de produtos do vendedor
+            $total_products = get_posts( array(
+                'post_type' => 'product',
+                'posts_per_page' => -1,
+                'author' => $user_id,
+                'post_status' => array( 'publish', 'draft', 'pending', 'private' ),
+                'fields' => 'ids',
+            ) );
+            
+            $publish_count = count( $total_products );
+            
+            // Remove o subsubsub original
+            unset( $views['all'] );
+            unset( $views['publish'] );
+            unset( $views['draft'] );
+            unset( $views['pending'] );
+            unset( $views['trash'] );
+            
+            // Adiciona a nova contagem
+            $views['publish'] = sprintf(
+                '<a href="%s"%s>%s <span class="count">(%s)</span></a>',
+                admin_url( 'edit.php?post_type=product&post_status=publish&author=' . $user_id ),
+                'publish' === get_query_var( 'post_status' ) ? ' class="current"' : '',
+                __( 'Published' ),
+                $publish_count
+            );
+        }
+        
+        return $views;
+    }
+
+    
     public static function filter_products_by_vendor( $query ) {
         // Verifica se o usuário atual é um vendedor
         if ( current_user_can( 'vendor' ) ) {
