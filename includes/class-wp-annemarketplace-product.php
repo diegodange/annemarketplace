@@ -28,8 +28,21 @@ class Products{
         add_action( 'pre_get_posts', [$this,'filter_products_by_vendor'] );
         add_filter( 'views_edit-product', [$this,'custom_product_subsubsub']);
 
+        add_action( 'admin_menu', [$this, 'remove_menu_items_for_vendor'], 999 );
+
     }
 
+    public static function remove_menu_items_for_vendor() {
+        // Verifica se o usuário atual é um vendedor
+        if ( current_user_can( 'vendor' ) ) {
+            // Remove itens de menu e submenus específicos
+            remove_menu_page( 'tools.php' ); // Ferramentas
+            remove_menu_page( 'edit-comments.php' ); // Comentários
+            remove_menu_page( 'edit.php' ); // Posts
+            remove_menu_page( 'edit.php?post_type=elementor_library' );
+        }
+    }
+    
 
     public static function custom_product_subsubsub( $views ) {
         // Verifica se o usuário atual é um vendedor
