@@ -50,6 +50,21 @@ class Products{
         add_action('woocommerce_admin_order_data_after_billing_address', [$this, 'exibir_vendor_id_pedido'], 10, 1);
         add_action('woocommerce_checkout_create_order', [$this, 'vincular_vendor_a_pedido'], 10, 1);
         add_action('pre_get_posts', [$this,'filtrar_produtos_e_pedidos_por_vendor']);
+        add_filter( 'ajax_query_attachments_args', [$this,'filter_vendor_media_library']);
+
+    }
+
+    function filter_vendor_media_library( $args ) {
+        // Verifica se o usuário atual é um 'vendor'
+        if ( current_user_can( 'vendor' ) ) {
+            // Obtém o ID do usuário atual
+            $user_id = get_current_user_id();
+
+            // Adiciona a restrição para mostrar apenas os arquivos do usuário atual
+            $args['author'] = $user_id;
+        }
+
+        return $args;
     }
 
     function filtrar_produtos_e_pedidos_por_vendor($query) {
