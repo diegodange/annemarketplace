@@ -47,9 +47,9 @@ class Products{
         });
 
         add_action('woocommerce_process_product_meta', [$this,'salvar_vendor_id_produto'] );
-        
+
     }
-    
+
     // Adicione este código ao seu arquivo functions.php ou a um plugin personalizado
     public static function salvar_vendor_id_produto($product_id) {
         // Verifique se o usuário atual é um 'vendor'
@@ -66,6 +66,22 @@ class Products{
     public static function remove_menu_items_for_vendor() {
 
         global $submenu;
+        global $menu;
+
+
+        if (current_user_can('vendor')) {
+            // Percorra os itens do menu
+            foreach ($menu as $key => $item) {
+                // Verifique se o item é o menu do WooCommerce
+                if ($item[2] === 'woocommerce') {
+                    // Altere o nome do menu principal para 'Meus Produtos'
+                    $menu[$key][0] = 'Gerenciamento';
+                    // Altere o ícone do menu principal para 'dashicons-products' (ou o ícone desejado)
+                    $menu[$key][6] = 'dashicons-admin-generic';
+                    break;
+                }
+            }
+        }
 
         if ( current_user_can( 'vendor' ) ) {
             // Adiciona um item de menu personalizado para "Meus Pedidos"
@@ -90,6 +106,9 @@ class Products{
             remove_menu_page( 'edit.php' ); // Posts
             remove_menu_page( 'edit.php?post_type=elementor_library' );
         }
+
+        return $menu;
+
     }
     
 
