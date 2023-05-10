@@ -45,9 +45,23 @@ class Products{
             );
             return $args;
         });
+
+        add_action('woocommerce_process_product_meta', [$this,'salvar_vendor_id_produto'] );
         
     }
     
+    // Adicione este código ao seu arquivo functions.php ou a um plugin personalizado
+    public static function salvar_vendor_id_produto($product_id) {
+        // Verifique se o usuário atual é um 'vendor'
+        if (current_user_can('vendor')) {
+            // Obtenha o ID do usuário atual
+            $user_id = get_current_user_id();
+
+            // Atualize o campo personalizado '_vendor_id' com o ID do usuário
+            update_post_meta($product_id, '_vendor_id', $user_id);
+        }
+    }
+
     
     public static function remove_menu_items_for_vendor() {
 
@@ -158,11 +172,6 @@ class Products{
         $role->add_cap( 'delete_private_shop_orders' );
         $role->add_cap( 'delete_published_shop_orders' );
         $role->add_cap( 'delete_others_shop_orders' );
-
-        
-
-
-
     }
 
 
@@ -170,34 +179,38 @@ class Products{
 
         global $post;
         
-        $vendors = get_users( array(
-            'role'    => 'vendor',
-            'orderby' => 'display_name',
-            'order'   => 'ASC',
-        ) );
-        
-        $options = array();
-        
-        foreach ( $vendors as $vendor ) {
-            $options[ $vendor->ID ] = $vendor->display_name;
+        // Verifique se o usuário atual é um administrador
+        if (current_user_can('administrator')) {
+ 
+            $vendors = get_users( array(
+                'role'    => 'vendor',
+                'orderby' => 'display_name',
+                'order'   => 'ASC',
+            ) );
+            
+            $options = array();
+            
+            foreach ( $vendors as $vendor ) {
+                $options[ $vendor->ID ] = $vendor->display_name;
+            }
+
+            echo '<div class="options_group">';
+            
+            woocommerce_wp_select( array(
+                'id'          => '_vendor_id',
+                'name' => '_vendor_id[]',
+                'label'       => __( 'Vendedor', 'woocommerce' ),
+                'description' => __( 'Selecione o(s) Vendedor(es) para este Produto', 'woocommerce' ),
+                'options' => $options,
+                'fields'     => array( 'ID', 'display_name' ),
+                'class'=> 'select2', 
+                'custom_attributes' => array('multiple' => 'multiple'),
+                'desc_tip'    => true, 
+
+            ) );
+            
+            echo '</div>';
         }
-
-        echo '<div class="options_group">';
-        
-        woocommerce_wp_select( array(
-            'id'          => '_vendor_id',
-            'name' => '_vendor_id[]',
-            'label'       => __( 'Vendedor', 'woocommerce' ),
-            'description' => __( 'Selecione o(s) Vendedor(es) para este Produto', 'woocommerce' ),
-            'options' => $options,
-            'fields'     => array( 'ID', 'display_name' ),
-            'class'=> 'select2', 
-            'custom_attributes' => array('multiple' => 'multiple'),
-            'desc_tip'    => true, 
-
-        ) );
-        
-        echo '</div>';
     }
 
     public static function save_custom_vendor_field( $post_id ) {
