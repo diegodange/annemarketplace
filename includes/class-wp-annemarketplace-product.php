@@ -29,18 +29,47 @@ class Products{
         add_filter( 'views_edit-product', [$this,'custom_product_subsubsub']);
 
         add_action( 'admin_menu', [$this, 'remove_menu_items_for_vendor'], 999 );
-        add_filter( 'woocommerce_show_admin_menu', '__return_true' );
 
+        add_filter( 'woocommerce_register_post_type_shop_order', function( $args ) {
+            $args['capabilities'] = array(
+                'read_private_shop_orders' => 'read_private_shop_orders',
+                'edit_shop_orders' => 'edit_shop_orders',
+                'edit_others_shop_orders' => 'edit_others_shop_orders',
+                'edit_published_shop_orders' => 'edit_published_shop_orders',
+                'publish_shop_orders' => 'publish_shop_orders',
+                'read_shop_order' => 'read_shop_order',
+                'delete_shop_orders' => 'delete_shop_orders',
+                'delete_private_shop_orders' => 'delete_private_shop_orders',
+                'delete_published_shop_orders' => 'delete_published_shop_orders',
+                'delete_others_shop_orders' => 'delete_others_shop_orders',
+            );
+            return $args;
+        });
+        
     }
+    
     
     public static function remove_menu_items_for_vendor() {
 
         global $submenu;
 
-    
+        if ( current_user_can( 'vendor' ) ) {
+            // Adiciona um item de menu personalizado para "Meus Pedidos"
+            add_menu_page(
+                __( 'Meus Pedidos', 'textdomain' ),
+                __( 'Meus Pedidos', 'textdomain' ),
+                'read',
+                'edit.php?post_type=shop_order&view-order=mine',
+                '',
+                'dashicons-cart',
+                26
+            );
+        }
         
         // Verifica se o usuário atual é um vendedor
         if ( current_user_can( 'vendor' ) ) {
+
+            
             // Remove itens de menu e submenus específicos
             remove_menu_page( 'tools.php' ); // Ferramentas
             remove_menu_page( 'edit-comments.php' ); // Comentários
@@ -114,6 +143,24 @@ class Products{
         $role->add_cap( 'view_vendor_orders' );
         $role->add_cap( 'view_orders' );
         $role->add_cap( 'view_woocommerce_reports' );
+        $role->add_cap( 'manage_woocommerce_orders' );
+        $role->add_cap( 'read_private_shop_orders' );
+        $role->add_cap( 'view_shop_order' );
+
+        $role->add_cap( 'edit_shop_order' );
+        $role->add_cap( 'read_shop_order' );
+        $role->add_cap( 'delete_shop_order' );
+        $role->add_cap( 'edit_shop_orders' );
+        $role->add_cap( 'edit_others_shop_orders' );
+        $role->add_cap( 'publish_shop_orders' );
+        $role->add_cap( 'read_private_shop_orders' );
+        $role->add_cap( 'delete_shop_orders' );
+        $role->add_cap( 'delete_private_shop_orders' );
+        $role->add_cap( 'delete_published_shop_orders' );
+        $role->add_cap( 'delete_others_shop_orders' );
+
+        
+
 
 
     }
