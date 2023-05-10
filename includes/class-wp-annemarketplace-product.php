@@ -49,11 +49,49 @@ class Products{
         add_action('woocommerce_process_product_meta', [$this, 'salvar_vendor_id_produto']);
         add_action('woocommerce_admin_order_data_after_billing_address', [$this, 'exibir_vendor_id_pedido'], 10, 1);
         add_action('woocommerce_checkout_create_order', [$this, 'vincular_vendor_a_pedido'], 10, 1);
-        add_action('pre_get_posts', [$this,'filtrar_produtos_e_pedidos_por_vendor']);
         add_filter( 'ajax_query_attachments_args', [$this,'filter_vendor_media_library']);
+        add_action( 'pre_get_posts', [$this,'filter_vendor_content']);
+        add_filter( 'posts_where', [$this,'filter_vendor_media_library_list_mode'], 10, 2 );
 
     }
 
+    function filter_vendor_content( $query ) {
+        // Verifica se o usuário atual é um 'vendor'
+        if ( current_user_can( 'vendor' ) && is_admin() && $query->is_main_query() ) {
+            // Obtém o ID do usuário atual
+            $user_id = get_current_user_id();
+    
+            // Verifica o tipo de tela atual
+            $screen = get_current_screen();
+            $current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : '';
+    
+            // Filtrar produtos
+            if ( $screen->id === 'edit-product' || is_post_type_archive( 'product' ) ) {
+                $query->set( 'author', $user_id );
+            }
+    
+            // Filtrar pedidos
+            if ( $screen->id === 'shop_order' && is_admin() || ( is_post_type_archive( 'shop_order' ) && is_admin() ) ) {
+                $query->set( 'meta_key', '_vendor_id' );
+                $query->set( 'meta_value', $user_id );
+            }
+        }
+    }
+    
+    function filter_vendor_media_library_list_mode( $where, $query ) {
+        // Verifica se o usuário atual é um 'vendor'
+        if ( current_user_can( 'vendor' ) && $query->is_main_query() && $query->get( 'post_type' ) === 'attachment' ) {
+            // Obtém o ID do usuário atual
+            $user_id = get_current_user_id();
+    
+            // Adiciona a restrição para mostrar apenas os arquivos do usuário atual
+            global $wpdb;
+            $where .= $wpdb->prepare( " AND $wpdb->posts.post_author = %d", $user_id );
+        }
+    
+        return $where;
+    }    
+    
     function filter_vendor_media_library( $args ) {
         // Verifica se o usuário atual é um 'vendor'
         if ( current_user_can( 'vendor' ) ) {
@@ -65,23 +103,6 @@ class Products{
         }
 
         return $args;
-    }
-
-    function filtrar_produtos_e_pedidos_por_vendor($query) {
-        if (current_user_can('vendor')) {
-            $user_id = get_current_user_id();
-    
-            // Filtrar produtos
-            if (is_post_type_archive('product')) {
-                $query->set('author', $user_id);
-            }
-    
-            // Filtrar pedidos
-            if (is_post_type_archive('shop_order') && is_admin()) {
-                $query->set('meta_key', '_vendor_id');
-                $query->set('meta_value', $user_id);
-            }
-        }
     }
     
     function exibir_vendor_id_pedido($order) {
