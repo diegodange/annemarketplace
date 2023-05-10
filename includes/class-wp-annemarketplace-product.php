@@ -29,10 +29,16 @@ class Products{
         add_filter( 'views_edit-product', [$this,'custom_product_subsubsub']);
 
         add_action( 'admin_menu', [$this, 'remove_menu_items_for_vendor'], 999 );
+        add_filter( 'woocommerce_show_admin_menu', '__return_true' );
 
     }
-
+    
     public static function remove_menu_items_for_vendor() {
+
+        global $submenu;
+
+    
+        
         // Verifica se o usuário atual é um vendedor
         if ( current_user_can( 'vendor' ) ) {
             // Remove itens de menu e submenus específicos
@@ -105,6 +111,11 @@ class Products{
         $role->add_cap( 'delete_private_products' );
         $role->add_cap( 'delete_published_products' );
         $role->add_cap( 'delete_others_products' );
+        $role->add_cap( 'view_vendor_orders' );
+        $role->add_cap( 'view_orders' );
+        $role->add_cap( 'view_woocommerce_reports' );
+
+
     }
 
 
