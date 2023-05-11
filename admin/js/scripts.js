@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-    $('.select2').select2({
+    $('#_vendor_id').select2({
         maximumSelectionLength: 1
     } );
 });
