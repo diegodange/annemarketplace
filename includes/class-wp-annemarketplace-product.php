@@ -56,8 +56,8 @@ class Products{
     }
 
     function filter_vendor_content( $query ) {
-        // Verifica se o usuário atual é um 'vendor'
-        if ( current_user_can( 'vendor' ) && is_admin() && $query->is_main_query() ) {
+        // Verifica se o usuário atual tem o papel 'vendor'
+        if ( in_array( 'vendor', wp_get_current_user()->roles ) && is_admin() && $query->is_main_query() ) {
             // Obtém o ID do usuário atual
             $user_id = get_current_user_id();
     
@@ -71,12 +71,22 @@ class Products{
             }
     
             // Filtrar pedidos
-            if ( $screen->id === 'shop_order' && is_admin() || ( is_post_type_archive( 'shop_order' ) && is_admin() ) ) {
-                $query->set( 'meta_key', '_vendor_id' );
-                $query->set( 'meta_value', $user_id );
+            if ( $screen->id === 'edit-shop_order' || $screen->id === 'shop_order' ) {
+                // Define a meta query para filtrar pelo campo personalizado "_vendor_id" correspondente ao ID do vendor
+                $meta_query = array(
+                    array(
+                        'key'     => '_vendor_id',
+                        'value'   => $user_id,
+                        'compare' => '=',
+                    ),
+                );
+    
+                $query->set( 'meta_query', $meta_query );
             }
         }
     }
+    
+    
     
     function filter_vendor_media_library_list_mode( $where, $query ) {
         // Verifica se o usuário atual é um 'vendor'
