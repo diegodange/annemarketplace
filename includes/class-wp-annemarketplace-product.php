@@ -56,89 +56,90 @@ class Products{
 
     }
 
+    
     // Personaliza as contagens na listagem de pedidos
-function custom_vendor_order_subsubsub($views) {
-    // Verifica se o usuário atual é um vendedor
-    if (current_user_can('vendor')) {
-        $user_id = get_current_user_id();
-
-        // Obtém o total de pedidos do vendedor
-        $args = array(
-            'post_type'      => 'shop_order',
-            'posts_per_page' => -1,
-            'author'         => array($user_id, $user_id), // Filtra por ID do vendedor e ID do cliente
-            'post_status'    => array('wc-processing', 'wc-completed', 'wc-on-hold'),
-            'meta_query'     => array(
-                'relation' => 'OR',
-                array(
-                    'key'     => '_vendor_id',
-                    'value'   => $user_id,
-                    'compare' => '=',
+    function custom_vendor_order_subsubsub($views) {
+        // Verifica se o usuário atual é um vendedor
+        if (current_user_can('vendor')) {
+            $user_id = get_current_user_id();
+    
+            // Obtém o total de pedidos do vendedor
+            $args = array(
+                'post_type'      => 'shop_order',
+                'posts_per_page' => -1,
+                'author'         => array($user_id, $user_id), // Filtra por ID do vendedor e ID do cliente
+                'post_status'    => array('wc-processing', 'wc-completed', 'wc-on-hold'),
+                'meta_query'     => array(
+                    'relation' => 'OR',
+                    array(
+                        'key'     => '_vendor_id',
+                        'value'   => $user_id,
+                        'compare' => '=',
+                    ),
+                    array(
+                        'key'     => '_customer_user',
+                        'value'   => $user_id,
+                        'compare' => '=',
+                    ),
                 ),
-                array(
-                    'key'     => '_customer_user',
-                    'value'   => $user_id,
-                    'compare' => '=',
-                ),
-            ),
-        );
-
-        $total_orders = get_posts($args);
-        $processing_count = 0;
-        $completed_count = 0;
-        $on_hold_count = 0;
-
-        foreach ($total_orders as $order_id) {
-            $order = wc_get_order($order_id);
-            $status = $order->get_status();
-
-            switch ($status) {
-                case 'processing':
-                    $processing_count++;
-                    break;
-                case 'completed':
-                    $completed_count++;
-                    break;
-                case 'on-hold':
-                    $on_hold_count++;
-                    break;
+            );
+    
+            $total_orders = get_posts($args);
+            $processing_count = 0;
+            $completed_count = 0;
+            $on_hold_count = 0;
+    
+            foreach ($total_orders as $order_id) {
+                $order = wc_get_order($order_id);
+                $status = $order->get_status();
+    
+                switch ($status) {
+                    case 'processing':
+                        $processing_count++;
+                        break;
+                    case 'completed':
+                        $completed_count++;
+                        break;
+                    case 'on-hold':
+                        $on_hold_count++;
+                        break;
+                }
             }
+    
+            // Remove as contagens originais
+            unset($views['all']);
+            unset($views['wc-processing']);
+            unset($views['wc-completed']);
+            unset($views['wc-on-hold']);
+    
+            // Adiciona as novas contagens
+            $views['wc-processing'] = sprintf(
+                '<a href="%s"%s>%s <span class="count">(%s)</span></a>',
+                admin_url('edit.php?post_type=shop_order&post_status=wc-processing'),
+                'processing' === get_query_var('post_status') ? ' class="current"' : '',
+                __('Processando'),
+                $processing_count
+            );
+    
+            $views['wc-completed'] = sprintf(
+                '<a href="%s"%s>%s <span class="count">(%s)</span></a>',
+                admin_url('edit.php?post_type=shop_order&post_status=wc-completed'),
+                'completed' === get_query_var('post_status') ? ' class="current"' : '',
+                __('Concluído'),
+                $completed_count
+            );
+    
+            $views['wc-on-hold'] = sprintf(
+                '<a href="%s"%s>%s <span class="count">(%s)</span></a>',
+                admin_url('edit.php?post_type=shop_order&post_status=wc-on-hold'),
+                'on-hold' === get_query_var('post_status') ? ' class="current"' : '',
+                __('Em espera'),
+                $on_hold_count
+            );
         }
-
-        // Remove as contagens originais
-        unset($views['all']);
-        unset($views['wc-processing']);
-        unset($views['wc-completed']);
-        unset($views['wc-on-hold']);
-
-        // Adiciona as novas contagens
-        $views['wc-processing'] = sprintf(
-            '<a href="%s"%s>%s <span class="count">(%s)</span></a>',
-            admin_url('edit.php?post_type=shop_order&post_status=processing&author=' . $user_id),
-            'processing' === get_query_var('post_status') ? ' class="current"' : '',
-            __('Processing'),
-            $processing_count
-        );
-
-        $views['wc-completed'] = sprintf(
-            '<a href="%s"%s>%s <span class="count">(%s)</span></a>',
-            admin_url('edit.php?post_type=shop_order&post_status=completed&author=' . $user_id),
-            'completed' === get_query_var('post_status') ? ' class="current"' : '',
-            __('Completed'),
-            $completed_count
-        );
-
-        $views['wc-on-hold'] = sprintf(
-            '<a href="%s"%s>%s <span class="count">(%s)</span></a>',
-            admin_url('edit.php?post_type=shop_order&post_status=on-hold&author=' . $user_id),
-            'on-hold' === get_query_var('post_status') ? ' class="current"' : '',
-            __('On Hold'),
-            $on_hold_count
-        );
+    
+        return $views;
     }
-
-    return $views;
-}
 
 
     function filter_vendor_content( $query ) {
@@ -170,6 +171,7 @@ function custom_vendor_order_subsubsub($views) {
                 $query->set( 'meta_query', $meta_query );
             }
         }
+        
     }
     
     
@@ -372,6 +374,9 @@ function custom_vendor_order_subsubsub($views) {
         $role->add_cap( 'delete_private_shop_orders');
         $role->add_cap( 'delete_published_shop_orders');
         $role->add_cap( 'delete_others_shop_orders');
+        $role->add_cap('edit_shop_order');
+
+        
         
     }
 
