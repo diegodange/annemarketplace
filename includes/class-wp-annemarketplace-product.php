@@ -198,9 +198,18 @@ class Products{
     function exibir_vendor_id_pedido($order) {
         $vendor_id = $order->get_meta('_vendor_id');
         
-        if (!empty($vendor_id)) {
-            echo 'Vendor ID: ' . $vendor_id;
+        $user = get_user_by('ID', $vendor_id);
+
+        if ($user) {
+            $username = $user->display_name; // Nome de usuário
+            $user_email = $user->user_email; // Email do usuário
+
+            // Faça o que for necessário com as informações do usuário
+            echo '<strong class="mt-4"> Informações da Loja </strong> </br>';
+            echo 'Vendedor: ' . $username. '</br>';
+            echo "Email: " . $user_email . "</br>";
         }
+
     }
 
     function vincular_vendor_a_pedido($order) {
