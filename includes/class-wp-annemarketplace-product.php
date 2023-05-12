@@ -1,6 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+
 class Products{
     private static $instance;
 
@@ -54,6 +55,57 @@ class Products{
         add_filter( 'posts_where', [$this,'filter_vendor_media_library_list_mode'], 10, 2 );
         add_filter('views_edit-shop_order',[$this,'custom_vendor_order_subsubsub']);
 
+        add_action('wp_dashboard_setup', [$this, 'add_custom_widget']);
+
+    }
+
+    // Exemplo de função para adicionar um widget personalizado
+    public function add_custom_widget() {
+        wp_add_dashboard_widget(
+            'custom_widget_id',
+            'Pedidos',
+            [$this, 'custom_widget_content']
+        );
+    }
+
+    // Exemplo de função para exibir o conteúdo do widget personalizado
+    public function custom_widget_content() {
+        // Obtém o ID do usuário atual
+        $user_id = get_current_user_id();
+
+        // Obtém todos os status de pedidos válidos
+        $order_statuses = wc_get_order_statuses();
+
+        // Inicializa um array para armazenar o total de pedidos em cada status
+        $order_counts = array();
+
+        // Obtém o total de pedidos em cada status
+        foreach ($order_statuses as $status_key => $status_label) {
+            $args = array(
+                'post_type'      => 'shop_order',
+                'post_status'    => 'any',
+                'posts_per_page' => -1,
+                'meta_query'     => array(
+                    array(
+                        'key'     => '_vendor_id',
+                        'value'   => $user_id,
+                        'compare' => '=',
+                    ),
+                ),
+            );
+
+            // Define o status atual para consulta
+            $args['post_status'] = $status_key;
+
+            $orders = get_posts($args);
+            $order_counts[$status_key] = count($orders);
+        }
+
+        // Exibe o total de pedidos em cada status
+        foreach ($order_counts as $status_key => $count) {
+            $status_label = isset($order_statuses[$status_key]) ? $order_statuses[$status_key] : '';
+            echo ucfirst($status_label) . ': ' . $count . '<br>';
+        }
     }
 
     
@@ -268,10 +320,11 @@ class Products{
             foreach ($menu as $key => $item) {
                 // Verifique se o item é o menu do WooCommerce
                 if ($item[2] === 'woocommerce') {
-                    // Altere o nome do menu principal para 'Meus Produtos'
-                    $menu[$key][0] = 'Gerenciamento';
-                    // Altere o ícone do menu principal para 'dashicons-products' (ou o ícone desejado)
-                    $menu[$key][6] = 'dashicons-admin-generic';
+                    // // Altere o nome do menu principal para 'Meus Produtos'
+                    // $menu[$key][0] = 'Gerenciamento';
+                    // // Altere o ícone do menu principal para 'dashicons-products' (ou o ícone desejado)
+                    // $menu[$key][6] = 'dashicons-admin-generic';
+                    unset($menu[$key]);
                     break;
                 }
             }
@@ -356,7 +409,7 @@ class Products{
         $role->add_cap( 'delete_others_products' );
         $role->add_cap( 'view_vendor_orders' );
         $role->add_cap( 'view_orders' );
-        $role->add_cap( 'view_woocommerce_reports' );
+        // $role->add_cap( 'view_woocommerce_reports' );
         $role->add_cap( 'manage_woocommerce_orders' );
         $role->add_cap( 'read_private_shop_orders' );
         $role->add_cap( 'view_shop_order' );
