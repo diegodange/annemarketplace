@@ -68,7 +68,7 @@ class Products{
                 'post_type'      => 'shop_order',
                 'posts_per_page' => -1,
                 'author'         => array($user_id, $user_id), // Filtra por ID do vendedor e ID do cliente
-                'post_status'    => array('wc-processing', 'wc-completed', 'wc-on-hold'),
+                'post_status'    => array('wc-processing', 'wc-completed', 'wc-on-hold', 'wc-cancelled'),
                 'meta_query'     => array(
                     'relation' => 'OR',
                     array(
@@ -88,6 +88,7 @@ class Products{
             $processing_count = 0;
             $completed_count = 0;
             $on_hold_count = 0;
+            $cancelled_count = 0;
     
             foreach ($total_orders as $order_id) {
                 $order = wc_get_order($order_id);
@@ -103,6 +104,9 @@ class Products{
                     case 'on-hold':
                         $on_hold_count++;
                         break;
+                    case 'cancelled':
+                        $cancelled_count++;
+                        break;
                 }
             }
     
@@ -111,6 +115,7 @@ class Products{
             unset($views['wc-processing']);
             unset($views['wc-completed']);
             unset($views['wc-on-hold']);
+            unset($views['wc-cancelled']);
     
             // Adiciona as novas contagens
             $views['wc-processing'] = sprintf(
@@ -135,6 +140,14 @@ class Products{
                 'on-hold' === get_query_var('post_status') ? ' class="current"' : '',
                 __('Em espera'),
                 $on_hold_count
+            );
+
+            $views['wc-cancelled'] = sprintf(
+                '<a href="%s"%s>%s <span class="count">(%s)</span></a>',
+                admin_url('edit.php?post_type=shop_order&post_status=wc-cancelled'),
+                'cancelled' === get_query_var('post_status') ? ' class="current"' : '',
+                __('Cancelado'),
+                $cancelled_count
             );
         }
     
