@@ -56,16 +56,55 @@ class Products{
         add_filter('views_edit-shop_order',[$this,'custom_vendor_order_subsubsub']);
 
         add_action('wp_dashboard_setup', [$this, 'add_custom_widget']);
+        add_action('wp_dashboard_setup', [$this, 'remove_vendor_widgets']);
 
     }
 
+    function remove_vendor_widgets() {
+        // Obtém o ID do usuário atual
+        $user_id = get_current_user_id();
+    
+        // Verifica se o usuário possui a função "vendor"
+        if (in_array('vendor', wp_get_current_user()->roles)) {
+            // IDs dos widgets a serem removidos
+            $widgets_to_remove = array(
+                'dashboard_quick_press',    // Publicação Rápida
+                'dashboard_primary',        // Central do WordPress
+                'dashboard_secondary',      // Notícias e Eventos
+                // Adicione mais IDs de widgets para removê-los
+            );
+    
+            // Remove os widgets selecionados
+            foreach ($widgets_to_remove as $widget_id) {
+                remove_meta_box($widget_id, 'dashboard', 'side');
+            }
+            
+            // IDs dos widgets do Elementor a serem removidos
+            $elementor_widgets = array(
+                'e-dashboard-overview',     // Visão geral do Elementor
+                'e-dashboard-templates',    // Modelos do Elementor
+                'e-dashboard-library',      // Biblioteca do Elementor
+                // Adicione mais IDs de widgets do Elementor para removê-los
+            );
+
+            // Remove os widgets do Elementor
+            foreach ($elementor_widgets as $widget_id) {
+                remove_meta_box($widget_id, 'dashboard', 'normal');
+            }
+            remove_meta_box('dashboard_activity', 'dashboard', 'normal');
+            remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
+        }
+    }
+    
     // Exemplo de função para adicionar um widget personalizado
     public function add_custom_widget() {
+        
         wp_add_dashboard_widget(
             'custom_widget_id',
             'Pedidos',
             [$this, 'custom_widget_content']
         );
+
     }
 
     // Exemplo de função para exibir o conteúdo do widget personalizado
