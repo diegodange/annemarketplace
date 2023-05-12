@@ -57,7 +57,14 @@ class Products{
 
         add_action('wp_dashboard_setup', [$this, 'add_custom_widget']);
         add_action('wp_dashboard_setup', [$this, 'remove_vendor_widgets']);
+        add_action('admin_init', [$this, 'remove_vendor_footer_text']);
 
+    }
+    
+    function remove_vendor_footer_text() {
+        if (current_user_can('vendor')) {
+            add_filter('admin_footer_text', '__return_empty_string', 11);
+        }
     }
 
     function remove_vendor_widgets() {
@@ -93,6 +100,7 @@ class Products{
             }
             remove_meta_box('dashboard_activity', 'dashboard', 'normal');
             remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
+
         }
     }
     
