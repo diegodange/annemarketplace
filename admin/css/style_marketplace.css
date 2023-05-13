@@ -84,3 +84,7 @@ td.name strong a {
     color: #939393 !important;
     font-weight: 400 !important;
 }
+table.wp-list-table {
+    box-shadow: 0 1px 5px 1px rgb(0 0 0 / 17%) !important;
+    border: none !important;
+}
