@@ -33,4 +33,38 @@ span.select2.select2-container {
  .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
     color: #b61111 !important;
 }
- span.select2-results ul li { font-size: 14px !important; text-transform: uppercase !important; }
+span.select2-results ul li { font-size: 14px !important; text-transform: uppercase !important; }
+
+.postbox {
+    border: none !important; 
+    box-shadow: 0 1px 5px 1px rgb(0 0 0 / 17%) !important;
+}
+#wpadminbar * :not(span,i,li){
+    font-family: "Instrument Sans", sans-serif !important;
+}
+#wpadminbar .quicklinks ul a span:not(.ab-icon) {
+    text-align: left;
+    font-family: "Instrument Sans", sans-serif !important;
+}
+.wp-core-ui .button-primary {
+    background: #ff962d !important;
+    border-color: #ff9730 !important;
+    color: #fff !important;
+}
+.wp-core-ui .button-primary:hover {
+    background: transparent !important;
+    border-color: #ff9730 !important;
+    color: #ff9730 !important;
+}
+#adminmenu .wp-has-current-submenu .wp-submenu a:focus, #adminmenu .wp-has-current-submenu .wp-submenu a:hover, #adminmenu .wp-has-current-submenu.opensub .wp-submenu a:focus, #adminmenu .wp-has-current-submenu.opensub .wp-submenu a:hover, #adminmenu .wp-submenu a:focus, #adminmenu .wp-submenu a:hover, #adminmenu a.wp-has-current-submenu:focus+.wp-submenu a:focus, #adminmenu a.wp-has-current-submenu:focus+.wp-submenu a:hover {
+    color: #ff9730 !important;
+}
+#order_data h2 {
+    font-family: "Instrument Sans", sans-serif !important;
+}
+#order_data p.order_number {
+    font-family: "Instrument Sans", sans-serif !important;
+}
+#login {
+    font-family: "Instrument Sans", sans-serif !important;
+}
