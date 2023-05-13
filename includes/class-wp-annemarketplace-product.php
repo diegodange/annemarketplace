@@ -58,9 +58,27 @@ class Products{
         add_action('wp_dashboard_setup', [$this, 'add_custom_widget']);
         add_action('wp_dashboard_setup', [$this, 'remove_vendor_widgets']);
         add_action('admin_init', [$this, 'remove_vendor_footer_text']);
+        add_action('admin_head', [$this,'custom_admin_fonts']);
+        add_action('admin_head', [$this,'custom_wpadminbar_fonts']);
 
     }
     
+    function custom_wpadminbar_fonts() {
+        echo '<style type="text/css">
+            #wpadminbar {
+                font-family: "Instrument Sans", sans-serif !important;
+            }
+        </style>';
+    }
+    
+    function custom_admin_fonts() {
+        echo '<style type="text/css">
+            body, #adminmenu, #adminmenu a, #adminmenu li.wp-menu-separator, #adminmenu li.wp-has-current-submenu, #adminmenu li.wp-menu-image, #adminmenu li.opensub, #adminmenu li.wp-has-submenu {
+                font-family: "Instrument Sans", sans-serif !important;
+            }
+        </style>';
+    }
+
     function remove_vendor_footer_text() {
         if (current_user_can('vendor')) {
             add_filter('admin_footer_text', '__return_empty_string', 11);
