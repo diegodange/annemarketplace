@@ -60,9 +60,8 @@ class Products{
         add_action('admin_init', [$this, 'remove_vendor_footer_text']);
         add_action('admin_head', [$this,'custom_admin_fonts']);
         add_action('admin_head', [$this,'custom_wpadminbar_fonts']);
-
     }
-    
+
     function custom_wpadminbar_fonts() {
         echo '<style type="text/css">
             #wpadminbar {

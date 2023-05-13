@@ -68,3 +68,19 @@ span.select2-results ul li { font-size: 14px !important; text-transform: upperca
 #login {
     font-family: "Instrument Sans", sans-serif !important;
 }
+.media-frame, .media-modal {
+    font-family: "Instrument Sans", sans-serif !important;
+}
+.media-frame.mode-grid .media-toolbar select {
+    font-family: "Instrument Sans", sans-serif !important;
+}
+#adminmenu, #adminmenuback, #adminmenuwrap {
+    background: #ffffff !important;
+}
+#adminmenu div.wp-menu-image:before {
+    color: #ff9730 !important;
+}
+td.name strong a {
+    color: #939393 !important;
+    font-weight: 400 !important;
+}

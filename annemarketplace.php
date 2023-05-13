@@ -54,7 +54,7 @@ function annemarketplace_add_css_admin(){
 function annemarketplace_add_js_admin(){
     wp_enqueue_script( 'Bootstrap_Bundle_Min_JS', plugin_dir_url(__FILE__) .'admin/js/bootstrap.bundle.min.js', array( 'jquery' ) );
     // wp_enqueue_script( 'Select2_Min_JS', plugin_dir_url(__FILE__) .'admin/js/select2.min.js', array(), '1.0.1', true );
-    wp_enqueue_script( 'Scripts_JS', plugin_dir_url(__FILE__) .'admin/js/scripts.js', array( 'jquery' ), '1.0.9', true);
+    wp_enqueue_script( 'Scripts_JS', plugin_dir_url(__FILE__) .'admin/js/scripts.js', array( 'jquery' ), '1.1.0', true);
 
 }
 
