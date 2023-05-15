@@ -60,7 +60,84 @@ class Products{
         add_action('admin_init', [$this, 'remove_vendor_footer_text']);
         add_action('admin_head', [$this,'custom_admin_fonts']);
         add_action('admin_head', [$this,'custom_wpadminbar_fonts']);
+
+        add_action('admin_menu', [$this,'adicionar_pagina_menu_configuracoes_loja']);
+        add_action('admin_post_salvar_configuracoes_loja', [$this,'processar_acao_salvar_configuracoes_loja']);
     }
+
+    // Função para exibir a página de configurações da loja
+function exibir_pagina_configuracoes_loja() {
+    ?>
+    <div class="wrap">
+        <h1><?php esc_html_e('Configurações da Loja', 'text-domain'); ?></h1>
+
+        <form method="POST" action="">
+            <input type="hidden" name="action" value="salvar_configuracoes_loja">
+            <?php wp_nonce_field('salvar_configuracoes_loja_nonce', 'salvar_configuracoes_loja_nonce'); ?>
+
+            <label for="store_name"><?php esc_html_e('Nome da loja', 'text-domain'); ?></label>
+            <input type="text" name="store_name" id="store_name" value="<?php echo esc_attr(get_user_meta(get_current_user_id(), 'store_name', true)); ?>" class="regular-text">
+
+            <label for="store_address"><?php esc_html_e('Endereço da loja', 'text-domain'); ?></label>
+            <input type="text" name="store_address" id="store_address" value="<?php echo esc_attr(get_user_meta(get_current_user_id(), 'store_address', true)); ?>" class="regular-text">
+
+            <label for="store_slug"><?php esc_html_e('Slug da loja', 'text-domain'); ?></label>
+            <input type="text" name="store_slug" id="store_slug" value="<?php echo esc_attr(get_user_meta(get_current_user_id(), 'store_slug', true)); ?>" class="regular-text">
+
+            <?php submit_button(__('Salvar Configurações', 'text-domain')); ?>
+        </form>
+    </div>
+    <?php
+}
+
+// Função para salvar as configurações da loja
+function salvar_configuracoes_loja() {
+    if (isset($_POST['salvar_configuracoes_loja_nonce']) && wp_verify_nonce($_POST['salvar_configuracoes_loja_nonce'], 'salvar_configuracoes_loja_nonce')) {
+        $user_id = get_current_user_id();
+
+        if (current_user_can('edit_user', $user_id) && in_array('vendor', get_userdata($user_id)->roles)) {
+            update_user_meta($user_id, 'store_name', sanitize_text_field($_POST['store_name']));
+            update_user_meta($user_id, 'store_address', sanitize_text_field($_POST['store_address']));
+            update_user_meta($user_id, 'store_slug', sanitize_text_field($_POST['store_slug']));
+        }
+
+        wp_redirect(admin_url('admin.php?page=configuracoes_loja&saved=true'));
+        exit;
+    }
+}
+
+// Função para adicionar a página de configurações da loja no menu principal
+function adicionar_pagina_menu_configuracoes_loja() {
+    add_menu_page(
+        'Configurações',
+        'Configurações',
+        'edit_posts',
+        'configuracoes_loja',
+        'exibir_pagina_configuracoes_loja',
+        'dashicons-admin-generic',
+        30
+    );
+}
+
+// Função para processar a ação de salvamento das configurações da loja
+function processar_acao_salvar_configuracoes_loja() {
+    if (isset($_POST['action']) && $_POST['action'] === 'salvar_configuracoes_loja') {
+        if (isset($_POST['salvar_configuracoes_loja_nonce']) && wp_verify_nonce($_POST['salvar_configuracoes_loja_nonce'], 'salvar_configuracoes_loja_nonce')) {
+            $user_id = get_current_user_id();
+
+            if (current_user_can('edit_user', $user_id) && in_array('vendor', get_userdata($user_id)->roles)) {
+                update_user_meta($user_id, 'store_name', sanitize_text_field($_POST['store_name']));
+                update_user_meta($user_id, 'store_address', sanitize_text_field($_POST['store_address']));
+                update_user_meta($user_id, 'store_slug', sanitize_text_field($_POST['store_slug']));
+            }
+
+            wp_redirect(admin_url('admin.php?page=configuracoes_loja&saved=true'));
+            exit;
+        }
+    }
+}
+
+
 
     function custom_wpadminbar_fonts() {
         echo '<style type="text/css">
