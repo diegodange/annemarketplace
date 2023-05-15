@@ -66,6 +66,13 @@ class Products{
         add_action('admin_menu', [$this,'adicionar_pagina_configuracoes_loja_menu']);
         add_action('add_meta_boxes_shop_order', [$this,'remover_widget_campos_personalizados_pedido']);
 
+        add_action('admin_init', [$this,'remover_paleta_cores_painel']);
+        add_filter('show_user_admin_color', '__return_false');
+
+    }
+
+    function remover_paleta_cores_painel() {
+        remove_action('admin_color_scheme_picker', 'admin_color_scheme_picker');
     }
 
     function remover_widget_campos_personalizados_pedido() {
