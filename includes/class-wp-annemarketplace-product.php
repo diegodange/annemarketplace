@@ -61,83 +61,80 @@ class Products{
         add_action('admin_head', [$this,'custom_admin_fonts']);
         add_action('admin_head', [$this,'custom_wpadminbar_fonts']);
 
-        add_action('admin_menu', [$this,'adicionar_pagina_menu_configuracoes_loja']);
+        // Ação para processar a ação de salvamento das configurações da loja
         add_action('admin_post_salvar_configuracoes_loja', [$this,'processar_acao_salvar_configuracoes_loja']);
+        add_action('admin_menu', [$this,'adicionar_pagina_configuracoes_loja_menu']);
+
     }
 
     // Função para exibir a página de configurações da loja
-function exibir_pagina_configuracoes_loja() {
-    ?>
-    <div class="wrap">
-        <h1><?php esc_html_e('Configurações da Loja', 'text-domain'); ?></h1>
-
-        <form method="POST" action="">
-            <input type="hidden" name="action" value="salvar_configuracoes_loja">
-            <?php wp_nonce_field('salvar_configuracoes_loja_nonce', 'salvar_configuracoes_loja_nonce'); ?>
-
-            <label for="store_name"><?php esc_html_e('Nome da loja', 'text-domain'); ?></label>
-            <input type="text" name="store_name" id="store_name" value="<?php echo esc_attr(get_user_meta(get_current_user_id(), 'store_name', true)); ?>" class="regular-text">
-
-            <label for="store_address"><?php esc_html_e('Endereço da loja', 'text-domain'); ?></label>
-            <input type="text" name="store_address" id="store_address" value="<?php echo esc_attr(get_user_meta(get_current_user_id(), 'store_address', true)); ?>" class="regular-text">
-
-            <label for="store_slug"><?php esc_html_e('Slug da loja', 'text-domain'); ?></label>
-            <input type="text" name="store_slug" id="store_slug" value="<?php echo esc_attr(get_user_meta(get_current_user_id(), 'store_slug', true)); ?>" class="regular-text">
-
-            <?php submit_button(__('Salvar Configurações', 'text-domain')); ?>
-        </form>
-    </div>
-    <?php
-}
-
-// Função para salvar as configurações da loja
-function salvar_configuracoes_loja() {
-    if (isset($_POST['salvar_configuracoes_loja_nonce']) && wp_verify_nonce($_POST['salvar_configuracoes_loja_nonce'], 'salvar_configuracoes_loja_nonce')) {
+    function exibir_pagina_configuracoes_loja() {
         $user_id = get_current_user_id();
 
         if (current_user_can('edit_user', $user_id) && in_array('vendor', get_userdata($user_id)->roles)) {
-            update_user_meta($user_id, 'store_name', sanitize_text_field($_POST['store_name']));
-            update_user_meta($user_id, 'store_address', sanitize_text_field($_POST['store_address']));
-            update_user_meta($user_id, 'store_slug', sanitize_text_field($_POST['store_slug']));
-        }
+            $store_name = get_user_meta($user_id, 'store_name', true);
+            $store_address = get_user_meta($user_id, 'store_address', true);
+            $store_slug = get_user_meta($user_id, 'store_slug', true);
 
-        wp_redirect(admin_url('admin.php?page=configuracoes_loja&saved=true'));
-        exit;
-    }
-}
-
-// Função para adicionar a página de configurações da loja no menu principal
-function adicionar_pagina_menu_configuracoes_loja() {
-    add_menu_page(
-        'Configurações',
-        'Configurações',
-        'edit_posts',
-        'configuracoes_loja',
-        'exibir_pagina_configuracoes_loja',
-        'dashicons-admin-generic',
-        30
-    );
-}
-
-// Função para processar a ação de salvamento das configurações da loja
-function processar_acao_salvar_configuracoes_loja() {
-    if (isset($_POST['action']) && $_POST['action'] === 'salvar_configuracoes_loja') {
-        if (isset($_POST['salvar_configuracoes_loja_nonce']) && wp_verify_nonce($_POST['salvar_configuracoes_loja_nonce'], 'salvar_configuracoes_loja_nonce')) {
-            $user_id = get_current_user_id();
-
-            if (current_user_can('edit_user', $user_id) && in_array('vendor', get_userdata($user_id)->roles)) {
-                update_user_meta($user_id, 'store_name', sanitize_text_field($_POST['store_name']));
-                update_user_meta($user_id, 'store_address', sanitize_text_field($_POST['store_address']));
-                update_user_meta($user_id, 'store_slug', sanitize_text_field($_POST['store_slug']));
+            // Exibir mensagem de confirmação se o formulário foi salvo
+            if (isset($_GET['saved']) && $_GET['saved'] === 'true') {
+                echo '<div id="message" class="updated notice is-dismissible"><p>As configurações foram salvas com sucesso.</p><button type="button" class="notice-dismiss"><span class="screen-reader-text">Fechar aviso</span></button></div>';
             }
 
-            wp_redirect(admin_url('admin.php?page=configuracoes_loja&saved=true'));
-            exit;
+            // Exibir o formulário de configurações da loja
+            echo '<div class="wrap">';
+            echo '<h1>Configurações da Loja</h1>';
+            echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+            echo '<input type="hidden" name="action" value="salvar_configuracoes_loja">';
+            wp_nonce_field('salvar_configuracoes_loja_nonce', 'salvar_configuracoes_loja_nonce');
+            echo '<table class="form-table">';
+            echo '<tr><th><label for="store_name">Nome da Loja</label></th><td><input type="text" id="store_name" name="store_name" value="' . esc_attr($store_name) . '"></td></tr>';
+            echo '<tr><th><label for="store_address">Endereço da Loja</label></th><td><input type="text" id="store_address" name="store_address" value="' . esc_attr($store_address) . '"></td></tr>';
+            echo '<tr><th><label for="store_slug">Slug da Loja</label></th><td><input type="text" id="store_slug" name="store_slug" value="' . esc_attr($store_slug) . '"></td></tr>';
+            echo '</table>';
+            echo '<p><input type="submit" class="button button-primary" value="Salvar Configurações"></p>';
+            echo '</form>';
+            echo '</div>';
+        } else {
+            echo '<div class="wrap"><h1>Permissão Negada</h1><p>Você não tem permissão para acessar esta página.</p></div>';
         }
     }
-}
 
+    // Função para processar a ação de salvamento das configurações da loja
+    function processar_acao_salvar_configuracoes_loja() {
+        if (isset($_POST['action']) && $_POST['action'] === 'salvar_configuracoes_loja') {
+            // Verifica o nonce de segurança
+            if (!isset($_POST['salvar_configuracoes_loja_nonce']) || !wp_verify_nonce($_POST['salvar_configuracoes_loja_nonce'], 'salvar_configuracoes_loja_nonce')) {
+                wp_die('Erro de Segurança! Por favor, tente novamente.');
+            }
 
+            // Obtém o ID do usuário logado
+            // Obtém o ID do usuário logado
+            $user_id = get_current_user_id();
+
+            // Verifica se o usuário tem permissão para editar as configurações da loja
+            if (current_user_can('edit_user', $user_id) && in_array('vendor', get_userdata($user_id)->roles)) {
+                // Obtém os dados do formulário
+                $store_name = isset($_POST['store_name']) ? sanitize_text_field($_POST['store_name']) : '';
+                $store_address = isset($_POST['store_address']) ? sanitize_text_field($_POST['store_address']) : '';
+                $store_slug = isset($_POST['store_slug']) ? sanitize_title($_POST['store_slug']) : '';
+
+                // Salva os dados da loja como meta dados do usuário
+                update_user_meta($user_id, 'store_name', $store_name);
+                update_user_meta($user_id, 'store_address', $store_address);
+                update_user_meta($user_id, 'store_slug', $store_slug);
+
+                // Redireciona para a página de configurações da loja com uma mensagem de confirmação
+                wp_redirect(admin_url('admin.php?page=configuracoes_loja&saved=true'));
+                exit;
+            }
+        }
+    }
+    
+    // Função para adicionar a página de configurações da loja no menu principal
+    function adicionar_pagina_configuracoes_loja_menu() {
+        add_menu_page('Dados da Loja', 'Dados da Loja', 'vendor', 'configuracoes_loja', [$this,'exibir_pagina_configuracoes_loja'], 'dashicons-store', 30);
+    }
 
     function custom_wpadminbar_fonts() {
         echo '<style type="text/css">
