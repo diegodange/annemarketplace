@@ -64,7 +64,13 @@ class Products{
         // Ação para processar a ação de salvamento das configurações da loja
         add_action('admin_post_salvar_configuracoes_loja', [$this,'processar_acao_salvar_configuracoes_loja']);
         add_action('admin_menu', [$this,'adicionar_pagina_configuracoes_loja_menu']);
+        add_action('add_meta_boxes_shop_order', [$this,'remover_widget_campos_personalizados_pedido']);
 
+    }
+
+    function remover_widget_campos_personalizados_pedido() {
+        remove_meta_box('postcustom', 'shop_order', 'normal');
+        remove_meta_box('woocommerce-order-downloads', 'shop_order', 'normal');
     }
 
     // Função para exibir a página de configurações da loja
