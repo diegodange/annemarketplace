@@ -68,9 +68,13 @@ class Products{
 
         add_action('admin_init', [$this,'remover_paleta_cores_painel']);
         add_filter('show_user_admin_color', '__return_false');
+        add_action('add_meta_boxes', [$this,'remover_metabox_postcustom']);    
+    }  
 
+    function remover_metabox_postcustom() {
+        remove_meta_box('postcustom', 'product', 'normal');
     }
-
+    
     function remover_paleta_cores_painel() {
         remove_action('admin_color_scheme_picker', 'admin_color_scheme_picker');
     }
