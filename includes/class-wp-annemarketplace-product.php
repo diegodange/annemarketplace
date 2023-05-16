@@ -73,6 +73,8 @@ class Products{
 
     function remover_metabox_postcustom() {
         remove_meta_box('postcustom', 'product', 'normal');
+        remove_meta_box('slugdiv', 'product', 'normal');
+        remove_meta_box('postexcerpt', 'product', 'normal');
     }
     
     function remover_paleta_cores_painel() {
