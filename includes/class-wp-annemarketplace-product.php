@@ -69,7 +69,22 @@ class Products{
         add_action('admin_init', [$this,'remover_paleta_cores_painel']);
         add_filter('show_user_admin_color', '__return_false');
         add_action('add_meta_boxes', [$this,'remover_metabox_postcustom']);    
+        add_action('wp_before_admin_bar_render', [$this,'remover_item_menu_novo']);
+        // Remove o link para a página de comentários na barra de administração
+        add_action('wp_before_admin_bar_render', [$this,'remover_link_comentarios']);
     }  
+
+    function remover_link_comentarios() {
+        global $wp_admin_bar;
+        $wp_admin_bar->remove_menu('comments');
+    }
+
+    function remover_item_menu_novo() {
+        global $wp_admin_bar;
+
+        // Remove o item "Novo" do menu
+        $wp_admin_bar->remove_node('new-content');
+    }
 
     function remover_metabox_postcustom() {
         remove_meta_box('postcustom', 'product', 'normal');
