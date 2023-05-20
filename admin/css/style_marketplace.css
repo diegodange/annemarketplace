@@ -88,3 +88,6 @@ table.wp-list-table {
     box-shadow: 0 1px 5px 1px rgb(0 0 0 / 17%) !important;
     border: none !important;
 }
+ul.order_actions.submitbox {
+    padding: 0 !important;
+}

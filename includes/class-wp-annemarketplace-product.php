@@ -66,8 +66,8 @@ class Products{
         add_action('admin_menu', [$this,'adicionar_pagina_configuracoes_loja_menu']);
         add_action('add_meta_boxes_shop_order', [$this,'remover_widget_campos_personalizados_pedido']);
 
-        // add_action('admin_init', [$this,'remover_paleta_cores_painel']);
-        // add_filter('show_user_admin_color', '__return_false');
+        add_action('admin_init', [$this,'remover_paleta_cores_painel']);
+        add_filter('show_user_admin_color', '__return_false');
         add_action('add_meta_boxes', [$this,'remover_metabox_postcustom']);    
         add_action('wp_before_admin_bar_render', [$this,'remover_item_menu_novo']);
         // Remove o link para a página de comentários na barra de administração
@@ -682,8 +682,10 @@ class Products{
         $role->add_cap( 'delete_published_shop_orders');
         $role->add_cap( 'delete_others_shop_orders');
         $role->add_cap('edit_shop_order');
-
-        
+        // $role->add_cap('manage_product_terms');
+        // $role->add_cap('edit_product_terms');
+        // $role->add_cap('delete_product_terms');
+        $role->add_cap('assign_product_terms');
         
     }
 
