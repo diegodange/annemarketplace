@@ -72,7 +72,14 @@ class Products{
         add_action('wp_before_admin_bar_render', [$this,'remover_item_menu_novo']);
         // Remove o link para a página de comentários na barra de administração
         add_action('wp_before_admin_bar_render', [$this,'remover_link_comentarios']);
+
+        add_filter( 'wp_is_application_passwords_available', '__return_false' );
+
+    
     }  
+
+
+
 
     function remover_link_comentarios() {
         global $wp_admin_bar;
