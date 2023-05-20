@@ -79,9 +79,27 @@ class Products{
         add_action('save_post_product', [$this,'save_product_approval_field']);
         add_action('add_meta_boxes_product', [$this,'move_product_approval_metabox']);
 
+        add_action('admin_init', [$this,'restrict_product_type_options']);
 
     }  
 
+    function restrict_product_type_options() {
+        // Verifica se o usuário é do tipo "vendor"
+        if (current_user_can('vendor')) {
+            // Remove as opções de tipo de produto, exceto "Produto simples"
+            add_filter('product_type_selector', [$this,'restrict_product_type']);
+        }
+    }
+    
+    function restrict_product_type($types) {
+        // Mantém somente a opção "Produto simples"
+        $types = array(
+            'simple' => __('Produto simples', 'woocommerce'),
+        );
+    
+        return $types;
+    }
+    
     // Adiciona o campo personalizado de aprovação aos produtos
     function add_approval_custom_field() {
         // Verifica se o usuário é um administrador

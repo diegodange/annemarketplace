@@ -91,3 +91,6 @@ table.wp-list-table {
 ul.order_actions.submitbox {
     padding: 0 !important;
 }
+.ajaxtag.hide-if-no-js {
+    display: flex !important;
+}
