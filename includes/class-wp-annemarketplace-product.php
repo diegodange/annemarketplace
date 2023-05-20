@@ -79,25 +79,31 @@ class Products{
         add_action('save_post_product', [$this,'save_product_approval_field']);
         add_action('add_meta_boxes_product', [$this,'move_product_approval_metabox']);
 
-        add_action('admin_init', [$this,'restrict_product_type_options']);
+        add_filter('product_type_selector', [$this,'restrict_product_type_options']);
+        add_filter('product_type_options', [$this,'restrict_product_type_options_v2']);
 
     }  
 
-    function restrict_product_type_options() {
+    function restrict_product_type_options_v2($product_types) {
         // Verifica se o usuário é do tipo "vendor"
         if (current_user_can('vendor')) {
-            // Remove as opções de tipo de produto, exceto "Produto simples"
-            add_filter('product_type_selector', [$this,'restrict_product_type']);
+            // Remove as opções "Virtual" e "Baixável"
+            unset($product_types['virtual']);
+            unset($product_types['downloadable']);
         }
+        return $product_types;
     }
+
+    function restrict_product_type_options($product_types) {
+        // Verifica se o usuário é do tipo "vendor"
+        if (current_user_can('vendor')) {
+            // Mantém somente a opção "Produto simples"
+            $product_types = array(
+                'simple' => __('Produto simples', 'woocommerce'),
+            );
+        }
     
-    function restrict_product_type($types) {
-        // Mantém somente a opção "Produto simples"
-        $types = array(
-            'simple' => __('Produto simples', 'woocommerce'),
-        );
-    
-        return $types;
+        return $product_types;
     }
     
     // Adiciona o campo personalizado de aprovação aos produtos
