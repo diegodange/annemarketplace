@@ -66,8 +66,8 @@ class Products{
         add_action('admin_menu', [$this,'adicionar_pagina_configuracoes_loja_menu']);
         add_action('add_meta_boxes_shop_order', [$this,'remover_widget_campos_personalizados_pedido']);
 
-        add_action('admin_init', [$this,'remover_paleta_cores_painel']);
-        add_filter('show_user_admin_color', '__return_false');
+        // add_action('admin_init', [$this,'remover_paleta_cores_painel']);
+        // add_filter('show_user_admin_color', '__return_false');
         add_action('add_meta_boxes', [$this,'remover_metabox_postcustom']);    
         add_action('wp_before_admin_bar_render', [$this,'remover_item_menu_novo']);
         // Remove o link para a página de comentários na barra de administração
@@ -75,11 +75,73 @@ class Products{
 
         add_filter( 'wp_is_application_passwords_available', '__return_false' );
 
-    
+        add_action('add_meta_boxes', [$this,'add_approval_custom_field']);
+        add_action('save_post_product', [$this,'save_product_approval_field']);
+        add_action('add_meta_boxes_product', [$this,'move_product_approval_metabox']);
+
+
     }  
 
+    // Adiciona o campo personalizado de aprovação aos produtos
+    function add_approval_custom_field() {
+        // Verifica se o usuário é um administrador
+        if (!current_user_can('administrator')) {
+            return;
+        }
+        // Adiciona o campo na página de edição do produto
+        add_meta_box(
+            'product_approval_field',
+            'Aprovação do Produto',
+            [$this,'display_product_approval_field'],
+            'product',
+            'normal',
+            'default'
+        );
+    }
 
+    // Exibe o campo personalizado de aprovação
+    function display_product_approval_field($post) {
+        // Verifica se o usuário é um administrador
+        if (!current_user_can('administrator')) {
+            return;
+        }
+        // Obtém o valor atual do campo personalizado
+        $approval_status = get_post_meta($post->ID, '_approval_status', true);
 
+        // Exibe o campo
+        ?>
+        <div class="options_group">
+            <label for="product-approval-status">
+                <input type="checkbox" id="product-approval-status" name="product_approval_status" value="1" <?php checked($approval_status, '1'); ?>>
+                Produto Aprovado
+            </label>
+        </div>
+        <?php
+    }
+
+    // Salva o valor do campo personalizado de aprovação
+    function save_product_approval_field($post_id) {
+        // Verifica se o usuário é um administrador
+        if (!current_user_can('administrator')) {
+            return;
+        }
+
+        if (isset($_POST['product_approval_status'])) {
+            update_post_meta($post_id, '_approval_status', '1');
+        } else {
+            update_post_meta($post_id, '_approval_status', '0');
+        }
+    }
+
+    // Move a metabox para a guia "Geral"
+    function move_product_approval_metabox() {
+        // Verifica se o usuário é um administrador
+        if (!current_user_can('administrator')) {
+            return;
+        }
+        remove_meta_box('product_approval_field', 'product', 'normal');
+        add_meta_box('product_approval_field', 'Aprovação do Produto', [$this,'display_product_approval_field'], 'product', 'normal', 'default');
+    }
 
     function remover_link_comentarios() {
         global $wp_admin_bar;
