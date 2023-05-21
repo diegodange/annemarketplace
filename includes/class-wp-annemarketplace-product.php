@@ -82,7 +82,24 @@ class Products{
         add_filter('product_type_selector', [$this,'restrict_product_type_options']);
         add_filter('product_type_options', [$this,'restrict_product_type_options_v2']);
 
+        add_filter('woocommerce_product_data_tabs', [$this,'restrict_product_data_tabs'], 10, 1);
+        add_filter('woocommerce_product_data_panels', '__return_empty_array', 10, 1);
     }  
+
+    function restrict_product_data_tabs($tabs) {
+        // Verifica se o usuário é do tipo "vendor"
+        if (current_user_can('vendor')) {
+            // Remove as guias de dados do produto
+            // unset($tabs['inventory']);
+            // unset($tabs['shipping']);
+            unset($tabs['linked_product']);
+            unset($tabs['attribute']);
+            unset($tabs['variations']);
+            unset($tabs['advanced']);
+        }
+        
+        return $tabs;
+    }
 
     function restrict_product_type_options_v2($product_types) {
         // Verifica se o usuário é do tipo "vendor"
