@@ -13,6 +13,9 @@ class Products{
     }
 
     public function __construct() {
+
+        add_filter( 'upload_mimes', [$this,'restrict_vendor_upload_types']);
+
         add_action( 'woocommerce_product_options_general_product_data', [$this,'add_custom_vendor_field']);
         add_action( 'woocommerce_process_product_meta',  [$this,'save_custom_vendor_field']);
 
@@ -86,6 +89,19 @@ class Products{
         add_filter('woocommerce_product_data_panels', '__return_empty_array', 10, 1);
     }  
 
+    function restrict_vendor_upload_types( $mime_types ) {
+        // Verifica se o usuário atual é um 'vendor'
+        if ( current_user_can( 'vendor' ) ) {
+            // Define apenas os tipos de arquivo de imagem permitidos
+            $mime_types = array(
+                'jpg|jpeg|jpe' => 'image/jpeg',
+                'gif'          => 'image/gif',
+                'png'          => 'image/png',
+            );
+        }
+        return $mime_types;
+    }
+    
     function restrict_product_data_tabs($tabs) {
         // Verifica se o usuário é do tipo "vendor"
         if (current_user_can('vendor')) {
