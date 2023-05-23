@@ -40,6 +40,9 @@ function annemarketplace_plugin_init() {
     include 'includes/class-wp-annemarketplace-dashboard.php';
     include 'includes/class-wp-annemarketplace-options.php';
     include 'includes/class-wp-annemarketplace-product.php';
+    
+    include 'includes/class-wp-annemarketplace-cart.php';
+
 
 }
 
