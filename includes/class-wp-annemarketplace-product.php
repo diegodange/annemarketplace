@@ -797,7 +797,9 @@ class Products{
         foreach( $columns as $column_key => $column_value ) {
             $new_columns[ $column_key ] = $column_value;
             if ( 'product_tag' === $column_key ) { // Adiciona após a coluna "Tag"
-                $new_columns['product_vendor'] = __( 'Vendedor', 'woocommerce' );
+                if (current_user_can('administrator')) {
+                    $new_columns['product_vendor'] = __( 'Vendedor', 'woocommerce' );
+                }
             }
         }
         return $new_columns;
@@ -805,26 +807,28 @@ class Products{
 
     // Exibe o nome do vendedor na coluna "Vendedor" da tabela de listagem de produtos
     public static function my_custom_products_table_column_content( $column, $post_id ) {
-        if ( 'product_vendor' === $column ) {
-            // Obtém o ID do usuário do tipo "vendor" para o produto
-            $vendor_id = get_post_meta($post_id, '_vendor_id', true);
-            // Obtém uma lista de objetos WP_User
-            $user_query = new WP_User_Query( array( 'role' => 'vendor' ) );
-            $users = $user_query->get_results();
-            $names = array();
-            for ($i=0; $i < count($vendor_id) ; $i++) { 
-                // Itera sobre a lista e imprime o valor de user_login de cada objeto
-                foreach ( $users as $user ) {
-                    if ($vendor_id[$i] == $user->data->ID) {
-                        $first_name = get_user_meta( $user->data->ID, 'first_name', true );
-                        $last_name = get_user_meta( $user->data->ID, 'last_name', true );
-                        $complete_name = $first_name.' '.$last_name;
-                        $profile_url = get_edit_user_link( $user->data->ID );
-                        $names[] = '<a href="' . $profile_url . '">' . $complete_name . '</a>';                        
+        if (current_user_can('administrator')) {
+            if ( 'product_vendor' === $column ) {
+                // Obtém o ID do usuário do tipo "vendor" para o produto
+                $vendor_id = get_post_meta($post_id, '_vendor_id', true);
+                // Obtém uma lista de objetos WP_User
+                $user_query = new WP_User_Query( array( 'role' => 'vendor' ) );
+                $users = $user_query->get_results();
+                $names = array();
+                for ($i=0; $i < count($vendor_id) ; $i++) { 
+                    // Itera sobre a lista e imprime o valor de user_login de cada objeto
+                    foreach ( $users as $user ) {
+                        if ($vendor_id[$i] == $user->data->ID) {
+                            $first_name = get_user_meta( $user->data->ID, 'first_name', true );
+                            $last_name = get_user_meta( $user->data->ID, 'last_name', true );
+                            $complete_name = $first_name.' '.$last_name;
+                            $profile_url = get_edit_user_link( $user->data->ID );
+                            $names[] = '<a href="' . $profile_url . '">' . $complete_name . '</a>';                        
+                        }
                     }
                 }
+                echo implode(', ', $names);
             }
-            echo implode(', ', $names);
         }
     }  
 
