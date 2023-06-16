@@ -34,16 +34,12 @@ function annemarketplace_plugin_init() {
 
     //INCLUDES
 
-
-
     include 'includes/class-wp-annemarketplace-variables.php';
     include 'includes/class-wp-annemarketplace-dashboard.php';
     include 'includes/class-wp-annemarketplace-options.php';
     include 'includes/class-wp-annemarketplace-product.php';
-    
     include 'includes/class-wp-annemarketplace-cart.php';
-
-
+    include 'includes/class-wp-annemarketplace-register.php';
 }
 
 
