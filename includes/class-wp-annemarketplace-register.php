@@ -1,43 +1,48 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
 
-class Register {
+class Register
+{
     private static $instance;
 
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (self::$instance == NULL) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    public function __construct() {
-        add_shortcode( 'custom_registration_form', array( $this, 'custom_registration_form_shortcode' ) );
-        add_action( 'admin_post_nopriv_custom_registration', array( $this, 'custom_registration_form_handler' ) );
-        add_action( 'admin_post_custom_registration', array( $this, 'custom_registration_form_handler' ) );
-        add_action( 'wp_ajax_check_username', array( $this, 'check_username' ) );
-        add_action( 'wp_ajax_nopriv_check_username', array( $this, 'check_username' ) );
+    public function __construct()
+    {
+        add_shortcode('custom_registration_form', array($this, 'custom_registration_form_shortcode'));
+        add_action('admin_post_nopriv_custom_registration', array($this, 'custom_registration_form_handler'));
+        add_action('admin_post_custom_registration', array($this, 'custom_registration_form_handler'));
+        add_action('wp_ajax_check_email', array($this, 'check_email'));
+        add_action('wp_ajax_nopriv_check_email', array($this, 'check_email'));
     }
 
     // Criação do shortcode para exibir o formulário de cadastro
-    public function custom_registration_form_shortcode() {
+    public function custom_registration_form_shortcode()
+    {
         ob_start();
         $this->custom_registration_form();
         return ob_get_clean();
     }
 
     // Criação do formulário de cadastro
-    public function custom_registration_form() {
+    public function custom_registration_form()
+    {
         ?>
-        <form id="registration-form" method="post" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" class="needs-validation mt-5 mb-5" novalidate>
+        <form id="registration-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="needs-validation mt-2 mb-2" novalidate>
             <input type="hidden" name="action" value="custom_registration">
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label for="username" class="form-label">Nome de usuário:</label>
-                    <input type="text" name="username" id="username" class="form-control" required>
+                    <label for="name" class="form-label">Nome:</label>
+                    <input type="text" name="name" id="name" class="form-control" required>
                     <div class="invalid-feedback">
-                        Por favor, insira um nome de usuário.
+                        Por favor, insira o nome.
                     </div>
                 </div>
 
@@ -60,13 +65,28 @@ class Register {
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label for="user_type" class="form-label">Tipo de usuário:</label>
-                    <select name="user_type" id="user_type" class="form-select" required>
-                        <option value="">Selecione um tipo de usuário</option>
-                        <option value="vendedor">Vendedor</option>
-                    </select>
+                    <label for="password_confirmation" class="form-label">Confirmar Senha:</label>
+                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
                     <div class="invalid-feedback">
-                        Por favor, selecione um tipo de usuário.
+                        Por favor, confirme a senha.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="company_name" class="form-label">Nome da Empresa:</label>
+                    <input type="text" name="company_name" id="company_name" class="form-control" required>
+                    <div class="invalid-feedback">
+                        Por favor, insira o nome da empresa.
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="cnpj" class="form-label">CNPJ:</label>
+                    <input type="text" name="cnpj" id="cnpj" class="form-control" required>
+                    <div class="invalid-feedback">
+                        Por favor, insira o CNPJ.
                     </div>
                 </div>
             </div>
@@ -76,73 +96,83 @@ class Register {
         </form>
 
         <script>
-        jQuery(document).ready(function($) {
-            $('#registration-form').on('submit', function(e) {
-                e.preventDefault();
+            jQuery(document).ready(function ($) {
+                $('#registration-form').on('submit', function (e) {
+                    e.preventDefault();
 
-                var form = $(this);
+                    var form = $(this);
 
-                // Realiza validações antes de enviar a requisição AJAX
-                if (!form[0].checkValidity()) {
-                    form[0].reportValidity();
-                    return;
-                }
+                    // Realiza validações antes de enviar a requisição AJAX
+                    if (!form[0].checkValidity()) {
+                        form[0].reportValidity();
+                        return;
+                    }
 
-                // Verifica se o nome de usuário já existe
-                var username = $('#username').val();
-                $.ajax({
-                    type: 'POST',
-                    url: '<?php echo esc_url( admin_url('admin-ajax.php') ); ?>',
-                    data: {
-                        action: 'check_username',
-                        username: username
-                    },
-                    success: function(response) {
-                        if (response === 'exists') {
-                            $('#form-message').html('<div class="alert alert-danger mt-3">O nome de usuário já está em uso.</div>');
-                        } else {
-                            // Nome de usuário disponível, continua com o registro
-                            registerUser();
+                    // Verifica se o e-mail já existe
+                    var email = $('#email').val();
+                    $.ajax({
+                        type: 'POST',
+                        url: '<?php echo esc_url(admin_url('admin-ajax.php')); ?>',
+                        data: {
+                            action: 'check_email',
+                            email: email
+                        },
+                        success: function (response) {
+                            if (response === 'exists') {
+                                $('#form-message').html('<div class="alert alert-danger mt-3">O e-mail já está em uso.</div>');
+                            } else {
+                                // E-mail disponível, continua com o registro
+                                registerUser();
+                            }
+                        },
+                        error: function (xhr) {
+                            $('#form-message').html('<div class="alert alert-danger mt-3">Ocorreu um erro ao verificar o e-mail.</div>');
                         }
-                    },
-                    error: function(xhr) {
-                        $('#form-message').html('<div class="alert alert-danger mt-3">Ocorreu um erro ao verificar o nome de usuário.</div>');
-                    }
+                    });
                 });
+
+                // Função para registrar o usuário
+                function registerUser() {
+                    var form = $('#registration-form');
+                    var password = $('#password').val();
+                    var passwordConfirmation = $('#password_confirmation').val();
+
+                    // Verifica se as senhas coincidem
+                    if (password !== passwordConfirmation) {
+                        $('#form-message').html('<div class="alert alert-danger">As senhas não coincidem.</div>');
+                        return;
+                    }
+
+                    var formData = form.serialize();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '<?php echo esc_url(admin_url('admin-post.php')); ?>',
+                        data: formData,
+                        success: function (response) {
+                            // Exibe mensagem de sucesso
+                            $('#form-message').html('<div class="alert alert-success">Registro realizado com sucesso.</div>');
+                            form[0].reset();
+                        },
+                        error: function (xhr) {
+                            // Exibe mensagem de erro
+                            $('#form-message').html('<div class="alert alert-danger">Ocorreu um erro ao registrar o usuário.</div>');
+                        }
+                    });
+                }
             });
-
-            // Função para registrar o usuário
-            function registerUser() {
-                var form = $('#registration-form');
-                var formData = form.serialize();
-
-                $.ajax({
-                    type: 'POST',
-                    url: '<?php echo esc_url( admin_url('admin-post.php') ); ?>',
-                    data: formData,
-                    success: function(response) {
-                        // Exibe mensagem de sucesso
-                        $('#form-message').html('<div class="alert alert-success">Registro realizado com sucesso.</div>');
-                        form[0].reset();
-                    },
-                    error: function(xhr) {
-                        // Exibe mensagem de erro
-                        $('#form-message').html('<div class="alert alert-danger">Ocorreu um erro ao registrar o usuário.</div>');
-                    }
-                });
-            }
-        });
         </script>
         <?php
     }
 
-    // Verifica se o nome de usuário já existe
-    public function check_username() {
-        if ( isset( $_POST['username'] ) ) {
-            $username = sanitize_user( $_POST['username'] );
-            $user_id = username_exists( $username );
+    // Verifica se o e-mail já existe
+    public function check_email()
+    {
+        if (isset($_POST['email'])) {
+            $email = sanitize_email($_POST['email']);
+            $user = get_user_by('email', $email);
 
-            if ( $user_id ) {
+            if ($user) {
                 echo 'exists';
             } else {
                 echo 'available';
@@ -153,24 +183,33 @@ class Register {
     }
 
     // Processamento do formulário de cadastro
-    public function custom_registration_form_handler() {
-        if ( isset( $_POST['action'] ) && $_POST['action'] == 'custom_registration' ) {
-            $username = sanitize_user( $_POST['username'] );
-            $email = sanitize_email( $_POST['email'] );
+    public function custom_registration_form_handler()
+    {
+        if (isset($_POST['action']) && $_POST['action'] == 'custom_registration') {
+            $name = sanitize_text_field($_POST['name']);
+            $email = sanitize_email($_POST['email']);
             $password = $_POST['password'];
-            $user_type = $_POST['user_type'];
+            $company_name = sanitize_text_field($_POST['company_name']);
+            $cnpj = sanitize_text_field($_POST['cnpj']);
+
+            // Gera o nome de usuário com base no e-mail
+            $username = sanitize_user(current(explode('@', $email)), true);
+            $userdata['user_login'] = $username;
 
             $userdata = array(
                 'user_login' => $username,
                 'user_email' => $email,
                 'user_pass' => $password,
-                'role' => $user_type,
+                'role' => 'vendor',
+                'first_name' => $name,
             );
 
-            $user_id = wp_insert_user( $userdata );
+            $user_id = wp_insert_user($userdata);
 
-            if ( ! is_wp_error( $user_id ) ) {
+            if (!is_wp_error($user_id)) {
                 // Registro bem-sucedido
+                update_user_meta($user_id, 'company_name', $company_name);
+                update_user_meta($user_id, 'cnpj', $cnpj);
                 wp_send_json_success();
             } else {
                 // Ocorreu um erro ao registrar o usuário

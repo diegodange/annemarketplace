@@ -44,6 +44,7 @@ function annemarketplace_plugin_init() {
 
 
 function annemarketplace_add_css_admin(){
+    wp_enqueue_style('Cadastro_Vendedor_CSS', plugin_dir_url(__FILE__). 'admin/css/cadastro_vendedor.css');
     wp_enqueue_style('Style_CSS', plugin_dir_url(__FILE__). 'admin/css/style_marketplace.css');
     wp_enqueue_style('Bootstrap_Min_CSS', plugin_dir_url(__FILE__). 'admin/css/bootstrap.min.css');
     wp_enqueue_style( 'Select2_Min_CSS', plugin_dir_url(__FILE__). 'admin/css/select2.min.css');

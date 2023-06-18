@@ -1,0 +1,57 @@
+form#registration-form {
+    font-family: "Titillium Web", Sans-serif;
+}
+
+form#registration-form label {
+    font-weight: 500;
+    font-size: 0.94rem;
+    letter-spacing: 0.4px;
+    margin-top: 1.5rem;
+    margin-bottom: 12px;
+}
+
+form#registration-form input {
+    font-weight: 400;
+    font-size: 0.94rem;
+    letter-spacing: 0.4px;
+    color:#727272bf;
+    border: 1px solid #dee2e6;
+    border-radius: 0.3rem;
+}
+
+form#registration-form select {
+    font-weight: 400;
+    font-size: 0.94rem;
+    letter-spacing: 0.4px;
+    color: #727272bf;
+    border: 1px solid #dee2e6;
+    line-height: 1.7rem;
+    border-radius: 0.3rem;
+}
+
+form#registration-form select:hover , form#registration-form select:focus {
+    box-shadow: none;
+}
+
+form#registration-form .form-control:focus {
+    box-shadow: none;
+}
+
+form#registration-form input:-webkit-autofill,
+form#registration-form input:-webkit-autofill:hover,
+form#registration-form input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #d7d7d74a inset !important;
+    -webkit-text-fill-color:#727272bf !important;
+    transition: background-color 5000s ease-in-out 0s; /* Define a transição de cor de fundo */
+}
+
+form#registration-form button.btn.btn-primary {
+    background: #f17400;
+    border: none;
+    padding: 7px 30px;
+    margin-top: 1rem;
+    color: #fff;
+}
+div#form-message {
+    margin-top: 2rem !important;
+}
