@@ -2,7 +2,7 @@ form#registration-form {
     font-family: "Titillium Web", Sans-serif;
 }
 
-form#registration-form label {
+form#registration-form label:not(.form-check-label) {
     font-weight: 500;
     font-size: 0.94rem;
     letter-spacing: 0.4px;

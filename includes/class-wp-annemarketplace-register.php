@@ -38,7 +38,7 @@ class Register
             <input type="hidden" name="action" value="custom_registration">
 
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <label for="name" class="form-label">Nome:</label>
                     <input type="text" name="name" id="name" class="form-control" required>
                     <div class="invalid-feedback">
@@ -46,17 +46,32 @@ class Register
                     </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <label for="email" class="form-label">E-mail:</label>
                     <input type="email" name="email" id="email" class="form-control" required>
                     <div class="invalid-feedback">
                         Por favor, insira um endereço de e-mail válido.
                     </div>
                 </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="company_name" class="form-label">Nome da Empresa:</label>
+                    <input type="text" name="company_name" id="company_name" class="form-control" required>
+                    <div class="invalid-feedback">
+                        Por favor, insira o nome da empresa.
+                    </div>
+                </div>
             </div>
 
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
+                    <label for="cnpj" class="form-label">CNPJ:</label>
+                    <input type="text" name="cnpj" id="cnpj" class="form-control" required>
+                    <div class="invalid-feedback">
+                        Por favor, insira o CNPJ.
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
                     <label for="password" class="form-label">Senha:</label>
                     <input type="password" name="password" id="password" class="form-control" required>
                     <div class="invalid-feedback">
@@ -64,7 +79,7 @@ class Register
                     </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <label for="password_confirmation" class="form-label">Confirmar Senha:</label>
                     <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
                     <div class="invalid-feedback">
@@ -73,21 +88,11 @@ class Register
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="company_name" class="form-label">Nome da Empresa:</label>
-                    <input type="text" name="company_name" id="company_name" class="form-control" required>
-                    <div class="invalid-feedback">
-                        Por favor, insira o nome da empresa.
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="cnpj" class="form-label">CNPJ:</label>
-                    <input type="text" name="cnpj" id="cnpj" class="form-control" required>
-                    <div class="invalid-feedback">
-                        Por favor, insira o CNPJ.
-                    </div>
+            <div class="form-check mb-3 mt-3 d-flex align-items-center">
+                <input type="checkbox" class="form-check-input" name="accept_terms" id="accept_terms" required style="cursor: pointer;">
+                <label class="form-check-label ms-2 mt-1" for="accept_terms">Aceitar termos e condições</label>
+                <div class="invalid-feedback">
+                    Você deve aceitar os termos e condições.
                 </div>
             </div>
 
@@ -192,6 +197,11 @@ class Register
             $company_name = sanitize_text_field($_POST['company_name']);
             $cnpj = sanitize_text_field($_POST['cnpj']);
 
+            // Verifica se o checkbox de aceitar os termos foi marcado
+            if (!isset($_POST['accept_terms'])) {
+                wp_send_json_error('Você deve aceitar os termos e condições.');
+            }
+
             // Gera o nome de usuário com base no e-mail
             $username = sanitize_user(current(explode('@', $email)), true);
             $userdata['user_login'] = $username;
@@ -208,15 +218,16 @@ class Register
 
             if (!is_wp_error($user_id)) {
                 // Registro bem-sucedido
-                update_user_meta($user_id, 'company_name', $company_name);
-                update_user_meta($user_id, 'cnpj', $cnpj);
+                update_user_meta($user_id, 'store_name', $company_name);
+                update_user_meta($user_id, 'store_slug', $cnpj);
                 wp_send_json_success();
             } else {
                 // Ocorreu um erro ao registrar o usuário
-                wp_send_json_error();
+                wp_send_json_error('Ocorreu um erro ao registrar o usuário.');
             }
         }
     }
 }
 
 Register::getInstance();
+?>
