@@ -12,49 +12,45 @@ class Cart{
     }
 
     public function __construct() {
-        // add_action('woocommerce_proceed_to_checkout', [$this,'verificar_vendedores_no_carrinho']);
-        // add_action('woocommerce_before_cart', [$this,'exibir_mensagem_erro_vendedores']);
+        add_filter('woocommerce_cart_item_name', [$this,'adicionar_informacoes_vendedor_carrinho'], 10, 3);
+        add_action('woocommerce_single_product_summary', [$this,'adicionar_informacoes_vendedor_pagina_produto'], 6);
     }
 
-    // function verificar_vendedores_no_carrinho() {
-    //     $cart_items = WC()->cart->get_cart();
+    // Adiciona as informações do vendedor aos produtos do carrinho
+    function adicionar_informacoes_vendedor_carrinho($product_name, $cart_item, $cart_item_key) {
+        $product_id = $cart_item['product_id'];
+        $vendor_id = get_post_field('post_author', $product_id);
+        $shop_name = get_user_meta($vendor_id, 'store_name', true);
+        $vendor_name = get_the_author_meta('display_name', $vendor_id);
 
-    //     if (count($cart_items) > 1) {
-    //         $first_vendor_id = null;
+        if ($shop_name) {
+            $product_name .= '<br><small><b>Produtor </b> ' . $shop_name . '</small>';
+        }
 
-    //         foreach ($cart_items as $cart_item_key => $cart_item) {
-    //             $product_id = $cart_item['product_id'];
-    //             $vendor_id = get_post_meta($product_id, '_vendor_id', true);
+        if (!$shop_name) {
+            $product_name .= '<br><small><b>Produtor </b> ' . $vendor_name . '</small>';
+        }
 
-    //             if ($first_vendor_id === null) {
-    //                 $first_vendor_id = $vendor_id;
-    //             } elseif ($vendor_id !== $first_vendor_id) {
-    //                 remove_action('woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout', 20);
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }   
+        return $product_name;
+    }
 
-    // function exibir_mensagem_erro_vendedores() {
-    //     $cart_items = WC()->cart->get_cart();
+    // Adiciona as informações do vendedor na página do produto
+    function adicionar_informacoes_vendedor_pagina_produto() {
+        global $product;
 
-    //     if (count($cart_items) > 1) {
-    //         $first_vendor_id = null;
+        $vendor_id = get_post_field('post_author', $product->get_id());
+        $shop_name = get_user_meta($vendor_id, 'store_name', true);
+        $vendor_name = get_the_author_meta('display_name', $vendor_id);
 
-    //         foreach ($cart_items as $cart_item_key => $cart_item) {
-    //             $product_id = $cart_item['product_id'];
-    //             $vendor_id = get_post_meta($product_id, '_vendor_id', true);
+        if ($shop_name) {
+            echo '<div class="vendor-info"><b>Produtor:</b> ' . $shop_name . '</div>';
+        }
 
-    //             if ($first_vendor_id === null) {
-    //                 $first_vendor_id = $vendor_id;
-    //             } elseif ($vendor_id !== $first_vendor_id) {
-    //                 wc_print_notice(__('Você só pode comprar produtos de um único vendedor por vez.'), 'error');
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
+        if (!$shop_name) {
+            echo '<div class="vendor-info"><b>Vendedor:</b> ' . $vendor_name . '</div>';
+        }
+    }
+
 
 }
 
