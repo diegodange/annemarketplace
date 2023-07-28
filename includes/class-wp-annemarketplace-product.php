@@ -14,6 +14,7 @@ class Products{
 
     public function __construct() {
 
+        
         add_filter( 'upload_mimes', [$this,'restrict_vendor_upload_types']);
 
         add_action( 'woocommerce_product_options_general_product_data', [$this,'add_custom_vendor_field']);
@@ -27,6 +28,7 @@ class Products{
             'edit_posts'   => true,
             'delete_posts' => true,
         ) );
+
 
         add_action( 'init', [$this,'add_vendor_product_caps'] );
         
@@ -69,8 +71,7 @@ class Products{
         add_action('admin_menu', [$this,'adicionar_pagina_configuracoes_loja_menu']);
         add_action('add_meta_boxes_shop_order', [$this,'remover_widget_campos_personalizados_pedido']);
 
-        add_action('admin_init', [$this,'remover_paleta_cores_painel']);
-        add_filter('show_user_admin_color', '__return_false');
+        // add_filter('show_user_admin_color', '__return_false');
         add_action('add_meta_boxes', [$this,'remover_metabox_postcustom']);    
         add_action('wp_before_admin_bar_render', [$this,'remover_item_menu_novo']);
         // Remove o link para a página de comentários na barra de administração
@@ -87,7 +88,12 @@ class Products{
 
         add_filter('woocommerce_product_data_tabs', [$this,'restrict_product_data_tabs'], 10, 1);
         add_filter('woocommerce_product_data_panels', '__return_empty_array', 10, 1);
+  
+
+
+
     }  
+
 
     function restrict_vendor_upload_types( $mime_types ) {
         // Verifica se o usuário atual é um 'vendor'
@@ -216,10 +222,6 @@ class Products{
         remove_meta_box('postcustom', 'product', 'normal');
         remove_meta_box('slugdiv', 'product', 'normal');
         remove_meta_box('postexcerpt', 'product', 'normal');
-    }
-    
-    function remover_paleta_cores_painel() {
-        remove_action('admin_color_scheme_picker', 'admin_color_scheme_picker');
     }
 
     function remover_widget_campos_personalizados_pedido() {
