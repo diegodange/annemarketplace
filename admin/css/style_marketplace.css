@@ -94,3 +94,50 @@ ul.order_actions.submitbox {
 .ajaxtag.hide-if-no-js {
     display: flex !important;
 }
+
+/* Remove todas as bordas da tabela e células */
+.shop_table,
+.shop_table_responsive {
+    border-collapse: collapse;
+    border: none;
+    background-color: white; /* Define o fundo da tabela como branco */
+    
+}
+
+.shop_table th,
+.shop_table td {
+    border: none;
+}
+
+/* Define o fundo das células alternadas */
+.shop_table tbody>tr:nth-child(odd)>td,
+.shop_table tbody>tr:nth-child(odd)>th {
+    background-color: #fff;
+}
+
+/* Opcional: Adiciona um pouco de espaço entre as células */
+.shop_table th,
+.shop_table td {
+    padding: 8px;
+}
+.woocommerce table.shop_table{
+    border: none !important;
+}
+table thead:first-child tr:first-child th {
+    border: none !important;
+} 
+/* Altera a cor de fundo dos botões para laranja */
+.wc-proceed-to-checkout .checkout-button {
+    background-color: #f17400 !important;
+    color: white !important; /* Define a cor do texto como branco */
+}
+
+/* Altera a cor de fundo quando o botão é hover */
+.wc-proceed-to-checkout .checkout-button:hover {
+    background-color: #d25e00 !important; /* Pode ajustar a tonalidade de laranja aqui */
+}
+
+/* Pode ajustar a cor do texto quando o botão é hover, se necessário */
+.wc-proceed-to-checkout .checkout-button:hover {
+    color: white !important;
+}
