@@ -124,14 +124,14 @@ class Register
                         },
                         success: function (response) {
                             if (response === 'exists') {
-                                $('#form-message').html('<div class="alert alert-danger mt-3">O e-mail já está em uso.</div>');
+                                $('#form-message').html('<div class="alert alert-danger mt-3 alert-dismissible fade show">O e-mail já está em uso. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>');
                             } else {
                                 // E-mail disponível, continua com o registro
                                 registerUser();
                             }
                         },
                         error: function (xhr) {
-                            $('#form-message').html('<div class="alert alert-danger mt-3">Ocorreu um erro ao verificar o e-mail.</div>');
+                            $('#form-message').html('<div class="alert alert-danger mt-3 alert-dismissible fade show">Ocorreu um erro ao verificar o e-mail.</div>');
                         }
                     });
                 });
@@ -144,7 +144,7 @@ class Register
 
                     // Verifica se as senhas coincidem
                     if (password !== passwordConfirmation) {
-                        $('#form-message').html('<div class="alert alert-danger">As senhas não coincidem.</div>');
+                        $('#form-message').html('<div class="alert alert-danger alert-dismissible fade show">As senhas não coincidem. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
                         return;
                     }
 
@@ -156,12 +156,13 @@ class Register
                         data: formData,
                         success: function (response) {
                             // Exibe mensagem de sucesso
-                            $('#form-message').html('<div class="alert alert-success">Registro realizado com sucesso.</div>');
+                            $('#form-message').html('<div class="alert alert-success alert-dismissible fade show">Registro realizado com sucesso. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
                             form[0].reset();
+                            
                         },
                         error: function (xhr) {
                             // Exibe mensagem de erro
-                            $('#form-message').html('<div class="alert alert-danger">Ocorreu um erro ao registrar o usuário.</div>');
+                            $('#form-message').html('<div class="alert alert-danger alert-dismissible fade show">Ocorreu um erro ao registrar o usuário. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div> ');
                         }
                     });
                 }
@@ -186,6 +187,37 @@ class Register
 
         wp_die();
     }
+
+    function send_registration_email($user_id, $name, $email, $company_name, $cnpj, $password) {
+        $subject = 'Bem-vindo ao Nosso Site';
+        $message = '<p>Olá <b>' . $name . '</b>,</p>';
+        $message .= '<p>Obrigado por se cadastrar em nosso site. Seus detalhes de registro são os seguintes:</p>';
+        $message .= '<p>Nome: <b>' . $name . '</b></p>';
+        $message .= '<p>E-mail: <b>' . $email . '</b></p>';
+        $message .= '<p>Nome da Empresa: <b>' . $company_name . '</b></p>';
+        $message .= '<p>CNPJ: <b>' . $cnpj . '</b></p>';
+        
+        // Adicione mais informações conforme necessário
+    
+        // Adicione o link de acesso à conta e senha
+        $account_url = 'https://anne.agr.br/minha-conta/'; // Substitua pelo URL real da conta
+        $message .= '<p><b>Link de Acesso à Conta:</b> <a href="' . $account_url . '">Clique aqui</a></p>';
+        $message .= '<p>Senha: <b>' . $password . '</b> </p>'; // Certifique-se de substituir $senha pela senha real
+    
+        // Configurar remetente
+        $from_name = 'Anne Marketplace (Cadastro Produtor)';
+        $from_email = 'contato@anne.agr.br';
+    
+        // Adicione o remetente do e-mail, se desejar
+        $headers = array(
+            'Content-Type: text/html; charset=UTF-8',
+            'From: ' . $from_name . ' <' . $from_email . '>',
+        );
+    
+        // Envie o e-mail
+        wp_mail($email, $subject, $message, $headers);
+    }
+    
 
     // Processamento do formulário de cadastro
     public function custom_registration_form_handler()
@@ -220,6 +252,10 @@ class Register
                 // Registro bem-sucedido
                 update_user_meta($user_id, 'store_name', $company_name);
                 update_user_meta($user_id, 'store_slug', $cnpj);
+
+                // Envie o e-mail após o registro bem-sucedido
+                $this->send_registration_email($user_id, $name, $email, $company_name, $cnpj, $password);
+
                 wp_send_json_success();
             } else {
                 // Ocorreu um erro ao registrar o usuário
